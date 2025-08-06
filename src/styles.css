@@ -1,0 +1,76 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 text-white hover:bg-primary-600;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  }
+
+  .btn-success {
+    @apply bg-success-500 text-white hover:bg-success-600;
+  }
+
+  .btn-warning {
+    @apply bg-warning-500 text-white hover:bg-warning-600;
+  }
+
+  .btn-danger {
+    @apply bg-danger-500 text-white hover:bg-danger-600;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+  }
+
+  @layer base {
+    html {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+  }
+
+  @layer components {
+    .hpt-btn {
+      @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+    }
+
+    .hpt-btn-primary {
+      @apply bg-hpt-primary text-white hover:bg-blue-700;
+    }
+
+    .hpt-btn-secondary {
+      @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
+    }
+
+    .hpt-card {
+      @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
+    }
+
+    .hpt-input {
+      @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-hpt-primary focus:border-transparent;
+    }
+  }
+}

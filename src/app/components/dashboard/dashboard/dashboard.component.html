@@ -1,0 +1,127 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Tableau de bord</h1>
+      <p class="text-gray-600">Aperçu de vos activités et statistiques</p>
+    </div>
+    <button class="btn btn-primary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouvelle campagne
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Dashboard content -->
+  <div *ngIf="!loading" class="space-y-6">
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="dashboardData.stats">
+      <app-stats-card
+        title="Messages non lus"
+        [value]="dashboardData.unreadMessages || 0"
+        icon="mail"
+        color="primary">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Alertes non lues"
+        [value]="dashboardData.unreadAlertes || 0"
+        icon="alert-triangle"
+        color="warning">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Notifications"
+        [value]="dashboardData.unreadNotifications || 0"
+        icon="bell"
+        color="info">
+      </app-stats-card>
+
+      <app-stats-card
+        title="Campagnes actives"
+        [value]="dashboardData.recentCampaigns?.length || 0"
+        icon="megaphone"
+        color="success">
+      </app-stats-card>
+    </div>
+
+    <!-- Recent Campaigns -->
+    <div class="card" *ngIf="dashboardData.recentCampaigns && dashboardData.recentCampaigns.length > 0">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-900">Campagnes récentes</h2>
+        <a routerLink="/campagnes" class="text-primary-600 text-sm hover:text-primary-700">
+          Voir tout
+        </a>
+      </div>
+
+      <div class="space-y-3">
+        <div *ngFor="let campagne of dashboardData.recentCampaigns"
+             class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-medium text-gray-900">{{ campagne.nom }}</h3>
+              <p class="text-sm text-gray-600">{{ campagne.typeCampagne }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="getCampagneStatusClass(ACTIVE)">
+              {{ campagne.status }}
+            </span>
+            <p class="text-xs text-gray-500 mt-1">{{ campagne.progression }}%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button routerLink="/messages/new"
+                class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-primary-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Nouveau message</span>
+        </button>
+
+        <button routerLink="/alertes/new"
+                class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-warning-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Nouvelle alerte</span>
+        </button>
+
+        <button routerLink="/campagnes/new"
+                class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-success-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Nouvelle campagne</span>
+        </button>
+
+        <button routerLink="/users"
+                class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-info-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Gérer utilisateurs</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

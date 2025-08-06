@@ -1,0 +1,254 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Alertes</h1>
+      <p class="text-gray-600">Consultez les alertes de santé publique</p>
+    </div>
+    <button routerLink="/alertes/new" class="btn btn-primary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+      Nouvelle alerte
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+      <!-- Search -->
+      <div>
+        <label class="form-label">Rechercher</label>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onFilterChange()"
+          placeholder="Titre, description, zone..."
+          class="form-input">
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label class="form-label">Type</label>
+        <select [(ngModel)]="selectedType"
+                (change)="onFilterChange()"
+                class="form-input">
+          <option value="">Tous les types</option>
+          <option *ngFor="let option of typeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Urgence -->
+      <div>
+        <label class="form-label">Urgence</label>
+        <select [(ngModel)]="selectedUrgence"
+                (change)="onFilterChange()"
+                class="form-input">
+          <option value="">Tous les niveaux</option>
+          <option *ngFor="let option of urgenceOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Active only -->
+      <div class="flex items-end">
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [(ngModel)]="showActiveOnly"
+            (change)="onFilterChange()"
+            class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500">
+          <span class="ml-2 text-sm text-gray-700">Actives seulement</span>
+        </label>
+      </div>
+
+      <!-- Unread only -->
+      <div class="flex items-end">
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [(ngModel)]="showUnreadOnly"
+            (change)="onFilterChange()"
+            class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500">
+          <span class="ml-2 text-sm text-gray-700">Non lues seulement</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Alerts List -->
+  <div *ngIf="!loading" class="space-y-4">
+    <div *ngFor="let alerte of getPaginatedAlertes()"
+         class="card hover:shadow-lg transition-shadow cursor-pointer relative"
+         [class.border-l-4]="!isAlerteRead(alerte)"
+         [class.border-red-500]="!isAlerteRead(alerte) && alerte.niveauUrgence === 'CRITIQUE'"
+         [class.border-orange-500]="!isAlerteRead(alerte) && alerte.niveauUrgence === 'URGENCE'"
+         [class.border-yellow-500]="!isAlerteRead(alerte) && (alerte.niveauUrgence === 'ALERTE' || alerte.niveauUrgence === 'ATTENTION')"
+         [class.border-blue-500]="!isAlerteRead(alerte) && alerte.niveauUrgence === 'INFO'"
+         [class.bg-red-50]="!isAlerteRead(alerte) && alerte.niveauUrgence === 'CRITIQUE'"
+         [class.bg-orange-50]="!isAlerteRead(alerte) && alerte.niveauUrgence === 'URGENCE'"
+         [class.bg-yellow-50]="!isAlerteRead(alerte) && (alerte.niveauUrgence === 'ALERTE' || alerte.niveauUrgence === 'ATTENTION')"
+         [class.bg-blue-50]="!isAlerteRead(alerte) && alerte.niveauUrgence === 'INFO'"
+         [class.opacity-60]="isExpired(alerte)"
+         (click)="markAsRead(alerte)"
+         [routerLink]="['/alertes', alerte.id]">
+
+      <!-- Expired indicator -->
+      <div *ngIf="isExpired(alerte)"
+           class="absolute top-2 right-2 bg-gray-500 text-white text-xs px-2 py-1 rounded">
+        Expirée
+      </div>
+
+      <div class="flex items-start justify-between">
+        <div class="flex-1 min-w-0">
+
+          <!-- Header -->
+          <div class="flex items-center space-x-3 mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 truncate"
+                [class.font-bold]="!isAlerteRead(alerte)">
+              {{ alerte.titre }}
+            </h3>
+
+            <!-- Unread indicator -->
+            <div *ngIf="!isAlerteRead(alerte)"
+                 class="w-2 h-2 bg-red-500 rounded-full flex-shrink-0">
+            </div>
+          </div>
+
+          <!-- Meta info -->
+          <div class="flex items-center space-x-4 mb-3">
+            <div class="flex items-center space-x-2">
+              <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                <span class="text-xs font-medium text-gray-600">
+                  {{ alerte.expediteur.prenom.charAt(0) }}{{ alerte.expediteur.nom.charAt(0) }}
+                </span>
+              </div>
+              <span class="text-sm text-gray-600">
+                {{ alerte.expediteur.prenom }} {{ alerte.expediteur.nom }}
+              </span>
+            </div>
+
+            <span class="text-sm text-gray-500">
+              {{ alerte.dateCreation | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+
+            <span *ngIf="alerte.dateExpiration" class="text-sm text-gray-500">
+              Expire le {{ alerte.dateExpiration | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+
+          <!-- Tags -->
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="getTypeClass(alerte.typeAlerte)">
+              {{ getTypeLabel(alerte.typeAlerte) }}
+            </span>
+
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="getUrgenceClass(alerte.niveauUrgence)">
+              {{ getUrgenceLabel(alerte.niveauUrgence) }}
+            </span>
+
+            <span *ngIf="alerte.zoneAffectee"
+                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              📍 {{ alerte.zoneAffectee }}
+            </span>
+          </div>
+
+          <!-- Description -->
+          <p class="text-gray-600 text-sm line-clamp-2 mb-3">
+            {{ alerte.description }}
+          </p>
+
+          <!-- Status indicators -->
+          <div class="flex items-center space-x-4">
+            <div *ngIf="isAlerteRead(alerte)" class="flex items-center text-green-600 text-sm">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Lu
+            </div>
+
+            <div *ngIf="isAlerteAccused(alerte)" class="flex items-center text-blue-600 text-sm">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              </svg>
+              Accusé
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col items-end space-y-2 ml-4">
+          <button *ngIf="!isAlerteRead(alerte)"
+                  (click)="$event.stopPropagation(); markAsRead(alerte)"
+                  class="text-primary-600 hover:text-primary-700 text-sm">
+            Marquer comme lu
+          </button>
+
+          <button *ngIf="!isAlerteAccused(alerte)"
+                  (click)="$event.stopPropagation(); accuseReception(alerte)"
+                  class="text-blue-600 hover:text-blue-700 text-sm">
+            Accuser réception
+          </button>
+
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalItems > itemsPerPage" class="card">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-gray-700">
+        Affichage de {{ (currentPage - 1) * itemsPerPage + 1 }} à
+        {{ Math.min(currentPage * itemsPerPage, totalItems) }} sur {{ totalItems }} résultats
+      </div>
+
+      <div class="flex space-x-1">
+        <button (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Précédent
+        </button>
+
+        <button *ngFor="let page of [].constructor(getTotalPages()); let i = index"
+                (click)="goToPage(i + 1)"
+                [class.bg-primary-600]="currentPage === i + 1"
+                [class.text-white]="currentPage === i + 1"
+                [class.bg-white]="currentPage !== i + 1"
+                [class.text-gray-700]="currentPage !== i + 1"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+          {{ i + 1 }}
+        </button>
+
+        <button (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === getTotalPages()"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Suivant
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && filteredAlertes.length === 0" class="card text-center py-12">
+    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune alerte trouvée</h3>
+    <p class="text-gray-600 mb-4">Aucune alerte ne correspond à vos critères de recherche.</p>
+  </div>
+</div>

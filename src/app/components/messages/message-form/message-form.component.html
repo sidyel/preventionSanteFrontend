@@ -1,0 +1,227 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">
+        {{ isEditMode ? 'Modifier le message' : 'Nouveau message' }}
+      </h1>
+      <p class="text-gray-600">
+        {{ isEditMode ? 'Modifiez les informations du message' : 'Créez un nouveau message de sensibilisation' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Basic Information -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations du message</h2>
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Titre <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="titre"
+            placeholder="Titre du message"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            [class.border-red-500]="messageForm.get('titre')?.invalid && messageForm.get('titre')?.touched">
+          <div *ngIf="messageForm.get('titre')?.invalid && messageForm.get('titre')?.touched" class="text-red-500 text-xs mt-1">
+            Le titre est requis (minimum 3 caractères)
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Contenu <span class="text-red-500">*</span>
+          </label>
+          <textarea
+            formControlName="contenu"
+            rows="6"
+            placeholder="Contenu du message..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            [class.border-red-500]="messageForm.get('contenu')?.invalid && messageForm.get('contenu')?.touched"></textarea>
+          <div *ngIf="messageForm.get('contenu')?.invalid && messageForm.get('contenu')?.touched" class="text-red-500 text-xs mt-1">
+            Le contenu est requis (minimum 10 caractères)
+          </div>
+          <div class="text-xs text-gray-500 mt-1">
+            {{ messageForm.get('contenu')?.value?.length || 0 }} caractères
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Type de message <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="typeMessage"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              [class.border-red-500]="messageForm.get('typeMessage')?.invalid && messageForm.get('typeMessage')?.touched">
+              <option value="">Sélectionner un type</option>
+              <option *ngFor="let type of typeOptions" [value]="type">
+                {{ getTypeLabel(type) }}
+              </option>
+            </select>
+            <div *ngIf="messageForm.get('typeMessage')?.invalid && messageForm.get('typeMessage')?.touched" class="text-red-500 text-xs mt-1">
+              Le type de message est requis
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Priorité <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="priorite"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option *ngFor="let priorite of prioriteOptions" [value]="priorite">
+                {{ getPrioriteLabel(priorite) }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Langue <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="langue"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option *ngFor="let langue of langues" [value]="langue">
+                {{ getLangueLabel(langue) }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Campagne associée</label>
+          <select
+            formControlName="campagne"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <option value="">Aucune campagne</option>
+            <option *ngFor="let campagne of campagnes" [value]="campagne.id">
+              {{ campagne.nom }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Médias</h2>
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Image (URL)</label>
+          <input
+            type="url"
+            formControlName="urlImage"
+            placeholder="https://example.com/image.jpg"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            [class.border-red-500]="messageForm.get('urlImage')?.invalid && messageForm.get('urlImage')?.touched">
+          <div *ngIf="messageForm.get('urlImage')?.invalid && messageForm.get('urlImage')?.touched" class="text-red-500 text-xs mt-1">
+            URL d'image valide requise
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Vidéo (URL)</label>
+          <input
+            type="url"
+            formControlName="urlVideo"
+            placeholder="https://example.com/video.mp4"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            [class.border-red-500]="messageForm.get('urlVideo')?.invalid && messageForm.get('urlVideo')?.touched">
+          <div *ngIf="messageForm.get('urlVideo')?.invalid && messageForm.get('urlVideo')?.touched" class="text-red-500 text-xs mt-1">
+            URL de vidéo valide requise
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Pièce jointe</label>
+          <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div class="space-y-1 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="flex text-sm text-gray-600">
+                <label class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                  <span>Télécharger un fichier</span>
+                  <input type="file" (change)="onFileSelected($event)" class="sr-only" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                </label>
+                <p class="pl-1">ou glisser-déposer</p>
+              </div>
+              <p class="text-xs text-gray-500">PDF, DOC, JPG, PNG jusqu'à 10MB</p>
+            </div>
+          </div>
+
+          <div *ngIf="selectedFile" class="mt-2 flex items-center justify-between p-2 bg-gray-50 rounded">
+            <span class="text-sm text-gray-700">{{ selectedFile.name }}</span>
+            <button type="button" (click)="removeFile()" class="text-red-600 hover:text-red-800">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipients -->
+    <div class="card" *ngIf="!isEditMode">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Destinataires</h2>
+      <div class="space-y-4">
+        <p class="text-sm text-gray-600">
+          Sélectionnez les destinataires pour ce message. Si aucun destinataire n'est sélectionné, le message sera sauvegardé comme brouillon.
+        </p>
+
+        <div class="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-4">
+          <div class="space-y-2">
+            <div *ngFor="let user of destinataires" class="flex items-center">
+              <input
+                type="checkbox"
+                [id]="'user-' + user.id"
+                [checked]="selectedDestinataires.includes(user.id!)"
+                (change)="onDestinataireChange(user.id!, $event)"
+                class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+              <label [for]="'user-' + user.id" class="ml-3 text-sm text-gray-700 flex-1">
+                <div class="flex justify-between">
+                  <span>{{ user.prenom }} {{ user.nom }}</span>
+                  <span class="text-gray-500">{{ user.typeActeur }}</span>
+                </div>
+                <div class="text-xs text-gray-500">{{ user.email }}</div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-sm text-gray-600">
+          {{ selectedDestinataires.length }} destinataire(s) sélectionné(s)
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-4">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary">
+        Annuler
+      </button>
+      <button type="button"
+              (click)="saveDraft()"
+              [disabled]="loading || messageForm.get('titre')?.invalid || messageForm.get('contenu')?.invalid"
+              class="btn btn-outline">
+        Sauvegarder comme brouillon
+      </button>
+      <button type="submit"
+              [disabled]="loading || messageForm.invalid"
+              class="btn btn-primary">
+        <app-loading-spinner *ngIf="loading" size="sm" color="white" class="mr-2"></app-loading-spinner>
+        {{ isEditMode ? 'Mettre à jour' : (selectedDestinataires.length > 0 ? 'Créer et envoyer' : 'Créer le message') }}
+      </button>
+    </div>
+  </form>
+</div>
+

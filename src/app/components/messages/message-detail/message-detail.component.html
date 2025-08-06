@@ -1,0 +1,256 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && message" class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-start">
+      <div class="flex items-center space-x-4">
+        <button (click)="goBack()" class="btn btn-secondary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Retour
+        </button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">{{ message.titre }}</h1>
+          <div class="flex items-center space-x-4 mt-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [class]="getPrioriteClass(message.priorite!)">
+              {{ getPrioriteLabel(message.priorite!) }}
+            </span>
+            <span class="text-sm text-gray-500">{{ getTypeLabel(message.typeMessage) }}</span>
+            <span class="text-sm text-gray-500" *ngIf="message.envoye">
+              <svg class="w-4 h-4 inline mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Envoyé
+            </span>
+            <span class="text-sm text-gray-500" *ngIf="!message.envoye">
+              <svg class="w-4 h-4 inline mr-1 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Brouillon
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="flex space-x-3">
+        <button *ngIf="!message.envoye" (click)="openSendModal()" class="btn btn-success">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          Envoyer
+        </button>
+        <button (click)="editMessage()" class="btn btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Modifier
+        </button>
+        <button (click)="deleteMessage()" class="btn btn-danger">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Message Content -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Contenu du message</h2>
+      <div class="prose max-w-none">
+        <p class="text-gray-900 whitespace-pre-wrap">{{ message.contenu }}</p>
+      </div>
+    </div>
+
+    <!-- Message Details -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Détails</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Type de message</label>
+          <p class="mt-1 text-sm text-gray-900">{{ getTypeLabel(message.typeMessage) }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Priorité</label>
+          <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                [class]="getPrioriteClass(message.priorite!)">
+            {{ getPrioriteLabel(message.priorite!) }}
+          </span>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Langue</label>
+          <p class="mt-1 text-sm text-gray-900">{{ getLangueLabel(message.langue!) }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Campagne associée</label>
+          <p class="mt-1 text-sm text-gray-900">{{ message.campagne?.nom || 'Aucune' }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Date de création</label>
+          <p class="mt-1 text-sm text-gray-900">{{ message.dateCreation | date:'dd/MM/yyyy à HH:mm' }}</p>
+        </div>
+        <div *ngIf="message.dateEnvoi">
+          <label class="block text-sm font-medium text-gray-500">Date d'envoi</label>
+          <p class="mt-1 text-sm text-gray-900">{{ message.dateEnvoi | date:'dd/MM/yyyy à HH:mm' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media -->
+    <div class="card" *ngIf="message.urlImage || message.urlVideo || message.pieceJointe">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Médias</h2>
+      <div class="space-y-4">
+        <div *ngIf="message.urlImage">
+          <label class="block text-sm font-medium text-gray-500 mb-2">Image</label>
+          <img [src]="message.urlImage" alt="Image du message" class="max-w-md rounded-lg border">
+        </div>
+        <div *ngIf="message.urlVideo">
+          <label class="block text-sm font-medium text-gray-500 mb-2">Vidéo</label>
+          <video controls class="max-w-md rounded-lg">
+            <source [src]="message.urlVideo" type="video/mp4">
+            Votre navigateur ne supporte pas la lecture vidéo.
+          </video>
+        </div>
+        <div *ngIf="message.pieceJointe">
+          <label class="block text-sm font-medium text-gray-500 mb-2">Pièce jointe</label>
+          <a [href]="message.pieceJointe" target="_blank"
+             class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+            </svg>
+            Télécharger la pièce jointe
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sender Information -->
+    <div class="card" *ngIf="message.expediteur">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Expéditeur</h2>
+      <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0">
+          <div class="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
+            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium text-gray-900">
+            {{ message.expediteur.prenom }} {{ message.expediteur.nom }}
+          </h3>
+          <p class="text-sm text-gray-500">{{ message.expediteur.email }}</p>
+          <p class="text-sm text-gray-500">{{ message.expediteur.telephone }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipients -->
+    <div class="card" *ngIf="message.destinataires && message.destinataires.length > 0">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        Destinataires ({{ message.destinataires.length }})
+      </h2>
+      <div class="space-y-2">
+        <div *ngFor="let dest of message.destinataires"
+             class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="flex-shrink-0">
+              <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">
+                {{ dest.destinataire.prenom }} {{ dest.destinataire.nom }}
+              </p>
+              <p class="text-xs text-gray-500">{{ dest.destinataire.email }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="dest.lu ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+              {{ dest.lu ? 'Lu' : 'Non lu' }}
+            </span>
+            <p class="text-xs text-gray-500 mt-1" *ngIf="dest.dateLecture">
+              {{ dest.dateLecture | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Send Modal -->
+  <div *ngIf="showSendModal" class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Envoyer le message</h3>
+
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 mb-4">
+            Sélectionnez les destinataires pour ce message :
+          </p>
+
+          <div class="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-4">
+            <div class="space-y-2">
+              <div *ngFor="let user of destinataires" class="flex items-center">
+                <input
+                  type="checkbox"
+                  [id]="'send-user-' + user.id"
+                  [checked]="selectedDestinataires.includes(user.id!)"
+                  (change)="onDestinataireChange(user.id!, $event)"
+                  class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                <label [for]="'send-user-' + user.id" class="ml-3 text-sm text-gray-700 flex-1">
+                  <div class="flex justify-between">
+                    <span>{{ user.prenom }} {{ user.nom }}</span>
+                    <span class="text-gray-500">{{ user.typeActeur }}</span>
+                  </div>
+                  <div class="text-xs text-gray-500">{{ user.email }}</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-sm text-gray-600 mt-2">
+            {{ selectedDestinataires.length }} destinataire(s) sélectionné(s)
+          </div>
+        </div>
+
+        <div class="flex space-x-3">
+          <button (click)="showSendModal = false" class="flex-1 btn btn-secondary">
+            Annuler
+          </button>
+          <button (click)="sendMessage()"
+                  [disabled]="selectedDestinataires.length === 0 || sendingMessage"
+                  class="flex-1 btn btn-primary">
+            <app-loading-spinner *ngIf="sendingMessage" size="sm" color="white" class="mr-2"></app-loading-spinner>
+            Envoyer le message
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="!loading && !message" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">Message introuvable</h3>
+    <p class="mt-1 text-sm text-gray-500">Le message demandé n'existe pas ou a été supprimé.</p>
+    <div class="mt-6">
+      <button (click)="goBack()" class="btn btn-primary">
+        Retour aux messages
+      </button>
+    </div>
+  </div>
+</div>

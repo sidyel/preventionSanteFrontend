@@ -1,0 +1,131 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
+import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+
+import { LoginComponent } from './components/auth/login/login.component';
+
+// Users
+import { UserListComponent } from './components/users/user-list/user-list.component';
+import { UserFormComponent } from './components/users/user-form/user-form.component';
+import { UserDetailComponent } from './components/users/user-detail/user-detail.component';
+
+// Structures Santé
+import { StructureSanteListComponent } from './components/structures-sante/structure-sante-list/structure-sante-list.component';
+import { StructureSanteFormComponent } from './components/structures-sante/structure-sante-form/structure-sante-form.component';
+import { StructureSanteDetailComponent } from './components/structures-sante/structure-sante-detail/structure-sante-detail.component';
+
+// ONGs
+import { OngListComponent } from './components/ongs/ong-list/ong-list.component';
+import { OngFormComponent } from './components/ongs/ong-form/ong-form.component';
+import { OngDetailComponent } from './components/ongs/ong-detail/ong-detail.component';
+
+// Population Rurale
+import { PopulationRuraleListComponent } from './components/population-rurale/population-rurale-list/population-rurale-list.component';
+import { PopulationRuraleFormComponent } from './components/population-rurale/population-rurale-form/population-rurale-form.component';
+import { PopulationRuraleDetailComponent } from './components/population-rurale/population-rurale-detail/population-rurale-detail.component';
+
+// Campagnes
+import { CampagneListComponent } from './components/campagnes/campagne-list/campagne-list.component';
+import { CampagneFormComponent } from './components/campagnes/campagne-form/campagne-form.component';
+import { CampagneDetailComponent } from './components/campagnes/campagne-detail/campagne-detail.component';
+
+// Messages
+import { MessageListComponent } from './components/messages/message-list/message-list.component';
+import { MessageFormComponent } from './components/messages/message-form/message-form.component';
+import { MessageDetailComponent } from './components/messages/message-detail/message-detail.component';
+
+// Alertes
+import { AlerteListComponent } from './components/alertes/alerte-list/alerte-list.component';
+import { AlerteFormComponent } from './components/alertes/alerte-form/alerte-form.component';
+import { AlerteDetailComponent } from './components/alertes/alerte-detail/alerte-detail.component';
+
+// Notifications
+import { NotificationListComponent } from './components/notifications/notification-list/notification-list.component';
+import {DashboardComponent} from "./components/dashboard/dashboard/dashboard.component";
+import {HptDashboardComponent} from "./features/hpt-dashboard/hpt-dashboard.component";
+import {HptHospitalListComponent} from "./features/hpt-hospitals/hpt-hospital-list/hpt-hospital-list.component";
+import {HptHospitalDetailComponent} from "./features/hpt-hospitals/hpt-hospital-detail/hpt-hospital-detail.component";
+import {HptTicketListComponent} from "./features/hpt-tickets/hpt-ticket-list/hpt-ticket-list.component";
+import {HptTicketCreateComponent} from "./features/hpt-tickets/hpt-ticket-create/hpt-ticket-create.component";
+import {AcceuilComponent} from "./acceuil/acceuil.component";
+
+const routes: Routes = [
+  { path: '', component: AcceuilComponent },
+
+  {
+    path: '',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+
+      // Users routes
+      { path: 'users', component: UserListComponent },
+      { path: 'users/new', component: UserFormComponent },
+      { path: 'users/:id', component: UserDetailComponent },
+      { path: 'users/:id/edit', component: UserFormComponent },
+
+      // Structures Santé routes
+      { path: 'structures-sante', component: StructureSanteListComponent },
+      { path: 'structures-sante/new', component: StructureSanteFormComponent },
+      { path: 'structures-sante/:id', component: StructureSanteDetailComponent },
+      { path: 'structures-sante/:id/edit', component: StructureSanteFormComponent },
+
+      // ONGs routes
+      { path: 'ongs', component: OngListComponent },
+      { path: 'ongs/new', component: OngFormComponent },
+      { path: 'ongs/:id', component: OngDetailComponent },
+      { path: 'ongs/:id/edit', component: OngFormComponent },
+
+      // Population Rurale routes
+      { path: 'population-rurale', component: PopulationRuraleListComponent },
+      { path: 'population-rurale/new', component: PopulationRuraleFormComponent },
+      { path: 'population-rurale/:id', component: PopulationRuraleDetailComponent },
+      { path: 'population-rurale/:id/edit', component: PopulationRuraleFormComponent },
+
+      // Campagnes routes
+      { path: 'campagnes', component: CampagneListComponent },
+      { path: 'campagnes/new', component: CampagneFormComponent },
+      { path: 'campagnes/:id', component: CampagneDetailComponent },
+      { path: 'campagnes/:id/edit', component: CampagneFormComponent },
+
+      // Messages routes
+      { path: 'messages', component: MessageListComponent },
+      { path: 'messages/new', component: MessageFormComponent },
+      { path: 'messages/:id', component: MessageDetailComponent },
+      { path: 'messages/:id/edit', component: MessageFormComponent },
+
+      // Alertes routes
+      { path: 'alertes', component: AlerteListComponent },
+      { path: 'alertes/new', component: AlerteFormComponent },
+      { path: 'alertes/:id', component: AlerteDetailComponent },
+      { path: 'alertes/:id/edit', component: AlerteFormComponent },
+
+      // Notifications routes
+      { path: 'notifications', component: NotificationListComponent }
+    ]
+  },
+  { path: 'hpt', component: HptDashboardComponent },
+  { path: 'hospitals', component: HptHospitalListComponent },
+  { path: 'hospitals/:id', component: HptHospitalDetailComponent },
+  { path: 'tickets', component: HptTicketListComponent },
+  { path: 'tickets/create', component: HptTicketCreateComponent },
+  { path: '**', redirectTo: '' },
+  {
+    path: 'auth',
+    component: AuthLayoutComponent,
+    children: [
+      { path: 'login', component: LoginComponent }
+    ]
+  },
+  { path: '**', redirectTo: '/dashboard' },
+
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }

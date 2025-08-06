@@ -1,0 +1,212 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Messages</h1>
+      <p class="text-gray-600">Consultez vos messages reçus</p>
+    </div>
+    <button routerLink="/messages/new" class="btn btn-primary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouveau message
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Search -->
+      <div>
+        <label class="form-label">Rechercher</label>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onFilterChange()"
+          placeholder="Titre, contenu, expéditeur..."
+          class="form-input">
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label class="form-label">Type</label>
+        <select [(ngModel)]="selectedType"
+                (change)="onFilterChange()"
+                class="form-input">
+          <option value="">Tous les types</option>
+          <option *ngFor="let option of typeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Priorité -->
+      <div>
+        <label class="form-label">Priorité</label>
+        <select [(ngModel)]="selectedPriorite"
+                (change)="onFilterChange()"
+                class="form-input">
+          <option value="">Toutes les priorités</option>
+          <option *ngFor="let option of prioriteOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Unread only -->
+      <div class="flex items-end">
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [(ngModel)]="showUnreadOnly"
+            (change)="onFilterChange()"
+            class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500">
+          <span class="ml-2 text-sm text-gray-700">Non lus seulement</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Messages List -->
+  <div *ngIf="!loading" class="space-y-4">
+    <div *ngFor="let message of getPaginatedMessages()"
+         class="card hover:shadow-lg transition-shadow cursor-pointer"
+         [class.border-l-4]="!isMessageRead(message)"
+         [class.border-primary-500]="!isMessageRead(message)"
+         [class.bg-blue-50]="!isMessageRead(message)"
+         (click)="markAsRead(message)"
+         [routerLink]="['/messages', message.id]">
+
+      <div class="flex items-start justify-between">
+        <div class="flex-1 min-w-0">
+
+          <!-- Header -->
+          <div class="flex items-center space-x-3 mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 truncate"
+                [class.font-bold]="!isMessageRead(message)">
+              {{ message.titre }}
+            </h3>
+
+            <!-- Unread indicator -->
+            <div *ngIf="!isMessageRead(message)"
+                 class="w-2 h-2 bg-primary-500 rounded-full flex-shrink-0">
+            </div>
+          </div>
+
+          <!-- Meta info -->
+          <div class="flex items-center space-x-4 mb-3">
+            <div class="flex items-center space-x-2">
+              <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                <span class="text-xs font-medium text-gray-600">
+                  {{ message.expediteur.prenom.charAt(0) }}{{ message.expediteur.nom.charAt(0) }}
+                </span>
+              </div>
+              <span class="text-sm text-gray-600">
+                {{ message.expediteur.prenom }} {{ message.expediteur.nom }}
+              </span>
+            </div>
+
+            <span class="text-sm text-gray-500">
+              {{ message.dateEnvoi | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+
+          <!-- Tags -->
+          <div class="flex items-center space-x-2 mb-3">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="getTypeClass(message.typeMessage)">
+              {{ getTypeLabel(message.typeMessage) }}
+            </span>
+
+            <span *ngIf="message.priorite"
+                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="getPrioriteClass(message.priorite)">
+              {{ getPrioriteLabel(message.priorite) }}
+            </span>
+
+            <span *ngIf="message.langue"
+                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {{ message.langue }}
+            </span>
+          </div>
+
+          <!-- Content preview -->
+          <p class="text-gray-600 text-sm line-clamp-2 mb-3">
+            {{ message.contenu }}
+          </p>
+
+          <!-- Attachments -->
+          <div *ngIf="message.pieceJointe || message.urlImage || message.urlVideo"
+               class="flex items-center space-x-2 text-sm text-gray-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+            </svg>
+            <span>Pièce jointe</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center space-x-2 ml-4">
+          <button *ngIf="!isMessageRead(message)"
+                  (click)="$event.stopPropagation(); markAsRead(message)"
+                  class="text-primary-600 hover:text-primary-700 text-sm">
+            Marquer comme lu
+          </button>
+
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalItems > itemsPerPage" class="card">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-gray-700">
+        Affichage de {{ (currentPage - 1) * itemsPerPage + 1 }} à
+        {{ Math.min(currentPage * itemsPerPage, totalItems) }} sur {{ totalItems }} résultats
+      </div>
+
+      <div class="flex space-x-1">
+        <button (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Précédent
+        </button>
+
+        <button *ngFor="let page of [].constructor(getTotalPages()); let i = index"
+                (click)="goToPage(i + 1)"
+                [class.bg-primary-600]="currentPage === i + 1"
+                [class.text-white]="currentPage === i + 1"
+                [class.bg-white]="currentPage !== i + 1"
+                [class.text-gray-700]="currentPage !== i + 1"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+          {{ i + 1 }}
+        </button>
+
+        <button (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === getTotalPages()"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Suivant
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && filteredMessages.length === 0" class="card text-center py-12">
+    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun message trouvé</h3>
+    <p class="text-gray-600 mb-4">Aucun message ne correspond à vos critères de recherche.</p>
+  </div>
+</div>

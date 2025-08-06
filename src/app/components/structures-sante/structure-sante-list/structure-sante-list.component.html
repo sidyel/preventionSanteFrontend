@@ -1,0 +1,197 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Structures de Santé</h1>
+      <p class="text-gray-600">Gérer les structures de santé du système</p>
+    </div>
+    <button routerLink="/structures-sante/new" class="btn btn-primary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouvelle structure
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <div class="card">
+    <div class="flex flex-wrap gap-4 items-end">
+      <div class="flex-1 min-w-60">
+        <label class="form-label">Rechercher</label>
+        <input type="text"
+               [(ngModel)]="searchTerm"
+               (input)="onFilterChange()"
+               placeholder="Nom de structure, nom du responsable..."
+               class="form-input">
+      </div>
+
+      <div class="w-48">
+        <label class="form-label">Type de structure</label>
+        <select [(ngModel)]="selectedTypeStructure"
+                (change)="onFilterChange()"
+                class="form-select">
+          <option value="">Tous les types</option>
+          <option *ngFor="let type of typesStructure" [value]="type">
+            {{ getTypeStructureLabel(type) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="w-48">
+        <label class="form-label">Région</label>
+        <select [(ngModel)]="selectedRegion"
+                (change)="onFilterChange()"
+                class="form-select">
+          <option value="">Toutes les régions</option>
+          <option *ngFor="let region of regionsSenegal" [value]="region">
+            {{ region }}
+          </option>
+        </select>
+      </div>
+
+      <button (click)="clearFilters()" class="btn btn-secondary">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Effacer
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center py-8">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Liste des structures -->
+  <div *ngIf="!loading" class="card">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">
+        {{ filteredStructures.length }} structure(s) trouvée(s)
+      </h2>
+    </div>
+
+    <!-- Tableau -->
+    <div class="overflow-x-auto" *ngIf="filteredStructures.length > 0">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Structure
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Type
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Responsable
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Localisation
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Capacité
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let structure of filteredStructures" class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">{{ structure.nomStructure }}</div>
+                <div class="text-sm text-gray-500" *ngIf="structure.numeroAgrement">
+                  N° {{ structure.numeroAgrement }}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {{ getTypeStructureLabel(structure.typeStructure) }}
+              </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ structure.user.prenom }} {{ structure.user.nom }}</div>
+            <div class="text-sm text-gray-500">{{ structure.user.email }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ structure.user.region }}</div>
+            <div class="text-sm text-gray-500" *ngIf="structure.user.commune">
+              {{ structure.user.commune }}
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ structure.capaciteAccueil || 'Non spécifiée' }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <div class="flex items-center justify-end space-x-2">
+              <button (click)="viewStructure(structure.id ?? 0)"
+                      class="text-primary-600 hover:text-primary-900"
+                      title="Voir">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              </button>
+              <button (click)="editStructure(structure.id ?? 0)"
+                      class="text-yellow-600 hover:text-yellow-900"
+                      title="Modifier">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button (click)="confirmDelete(structure)"
+                      class="text-red-600 hover:text-red-900"
+                      title="Supprimer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- État vide -->
+    <div *ngIf="filteredStructures.length === 0" class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune structure trouvée</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        {{ searchTerm || selectedTypeStructure || selectedRegion ?
+        'Aucune structure ne correspond à vos critères de recherche.' :
+        'Commencez par créer une nouvelle structure de santé.' }}
+      </p>
+      <div class="mt-6" *ngIf="!searchTerm && !selectedTypeStructure && !selectedRegion">
+        <button routerLink="/structures-sante/new" class="btn btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Nouvelle structure
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog de confirmation de suppression -->
+<app-confirm-dialog
+  [isOpen]="showDeleteDialog"
+  title="Supprimer la structure"
+confirmText="Supprimer"
+cancelText="Annuler"
+type="danger"
+(confirm)="deleteStructure()"
+(cancel)="cancelDelete()">
+</app-confirm-dialog>

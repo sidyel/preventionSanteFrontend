@@ -1,0 +1,6 @@
+export enum HptTicketStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED'
+}

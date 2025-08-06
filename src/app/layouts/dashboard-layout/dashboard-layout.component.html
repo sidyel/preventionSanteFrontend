@@ -1,0 +1,23 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <app-sidebar
+    [isOpen]="sidebarOpen"
+    (toggleSidebar)="toggleSidebar()">
+  </app-sidebar>
+
+  <!-- Main content -->
+  <div class="transition-all duration-300"
+       [class.ml-64]="sidebarOpen"
+       [class.ml-16]="!sidebarOpen">
+
+    <!-- Header -->
+    <app-header
+      (toggleSidebar)="toggleSidebar()">
+    </app-header>
+
+    <!-- Page content -->
+    <main class="p-6">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

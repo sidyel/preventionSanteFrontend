@@ -1,0 +1,284 @@
+<div class="max-w-4xl">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">
+      {{ isEditMode ? 'Modifier la campagne' : 'Nouvelle campagne' }}
+    </h1>
+    <p class="text-gray-600">
+      {{ isEditMode ? 'Modifiez les informations de la campagne' : 'Créez une nouvelle campagne de sensibilisation' }}
+    </p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading && isEditMode" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Form -->
+  <div *ngIf="!loading || !isEditMode" class="card">
+    <form [formGroup]="campagneForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <!-- Basic Info -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Informations de base</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Nom -->
+          <div>
+            <label class="form-label" for="nom">
+              Nom de la campagne *
+            </label>
+            <input
+              id="nom"
+              type="text"
+              formControlName="nom"
+              class="form-input"
+              [class.border-danger-300]="getFieldError('nom')"
+              placeholder="Nom de la campagne">
+            <p *ngIf="getFieldError('nom')" class="text-danger-600 text-sm mt-1">
+              {{ getFieldError('nom') }}
+            </p>
+          </div>
+
+          <!-- Type -->
+          <div>
+            <label class="form-label" for="typeCampagne">
+              Type de campagne *
+            </label>
+            <select
+              id="typeCampagne"
+              formControlName="typeCampagne"
+              class="form-input"
+              [class.border-danger-300]="getFieldError('typeCampagne')">
+              <option value="">Sélectionnez un type</option>
+              <option *ngFor="let option of typeOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <p *ngIf="getFieldError('typeCampagne')" class="text-danger-600 text-sm mt-1">
+              {{ getFieldError('typeCampagne') }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="form-label" for="description">
+            Description
+          </label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="3"
+            class="form-input"
+            placeholder="Description de la campagne...">
+          </textarea>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Planification</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Date début -->
+          <div>
+            <label class="form-label" for="dateDebut">
+              Date de début *
+            </label>
+            <input
+              id="dateDebut"
+              type="date"
+              formControlName="dateDebut"
+              class="form-input"
+              [class.border-danger-300]="getFieldError('dateDebut')">
+            <p *ngIf="getFieldError('dateDebut')" class="text-danger-600 text-sm mt-1">
+              {{ getFieldError('dateDebut') }}
+            </p>
+          </div>
+
+          <!-- Date fin -->
+          <div>
+            <label class="form-label" for="dateFin">
+              Date de fin *
+            </label>
+            <input
+              id="dateFin"
+              type="date"
+              formControlName="dateFin"
+              class="form-input"
+              [class.border-danger-300]="getFieldError('dateFin')">
+            <p *ngIf="getFieldError('dateFin')" class="text-danger-600 text-sm mt-1">
+              {{ getFieldError('dateFin') }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Détails</h3>
+
+        <!-- Objectifs -->
+        <div>
+          <label class="form-label" for="objectifs">
+            Objectifs
+          </label>
+          <textarea
+            id="objectifs"
+            formControlName="objectifs"
+            rows="3"
+            class="form-input"
+            placeholder="Objectifs de la campagne...">
+          </textarea>
+        </div>
+
+        <!-- Public cible -->
+        <div>
+          <label class="form-label" for="publicCible">
+            Public cible
+          </label>
+          <input
+            id="publicCible"
+            type="text"
+            formControlName="publicCible"
+            class="form-input"
+            placeholder="Public cible de la campagne">
+        </div>
+
+        <!-- Zones géographiques -->
+        <div>
+          <label class="form-label" for="zonesGeographiques">
+            Zones géographiques
+          </label>
+          <input
+            id="zonesGeographiques"
+            type="text"
+            formControlName="zonesGeographiques"
+            class="form-input"
+            placeholder="Zones couvertes par la campagne">
+        </div>
+      </div>
+
+      <!-- Numbers -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Métriques</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Nombre participants -->
+          <div>
+            <label class="form-label" for="nombreParticipants">
+              Nombre de participants
+            </label>
+            <input
+              id="nombreParticipants"
+              type="number"
+              formControlName="nombreParticipants"
+              class="form-input"
+              min="0"
+              placeholder="0">
+          </div>
+
+          <!-- Progression -->
+          <div *ngIf="isEditMode">
+            <label class="form-label" for="progression">
+              Progression (%)
+            </label>
+            <input
+              id="progression"
+              type="number"
+              formControlName="progression"
+              class="form-input"
+              min="0"
+              max="100"
+              placeholder="0">
+          </div>
+
+          <!-- Budget -->
+          <div>
+            <label class="form-label" for="budget">
+              Budget (FCFA)
+            </label>
+            <input
+              id="budget"
+              type="number"
+              formControlName="budget"
+              class="form-input"
+              min="0"
+              placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignment -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Attribution</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- User -->
+          <div>
+            <label class="form-label" for="userId">
+              Responsable *
+            </label>
+            <select
+              id="userId"
+              formControlName="userId"
+              class="form-input"
+              [class.border-danger-300]="getFieldError('userId')">
+              <option value="">Sélectionnez un responsable</option>
+              <option *ngFor="let user of users" [value]="user.id">
+                {{ user.prenom }} {{ user.nom }} ({{ user.email }})
+              </option>
+            </select>
+            <p *ngIf="getFieldError('userId')" class="text-danger-600 text-sm mt-1">
+              {{ getFieldError('userId') }}
+            </p>
+          </div>
+
+          <!-- Status -->
+          <div *ngIf="isEditMode">
+            <label class="form-label" for="status">
+              Statut
+            </label>
+            <select
+              id="status"
+              formControlName="status"
+              class="form-input">
+              <option *ngFor="let option of statusOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex space-x-4 pt-6">
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="btn btn-primary flex items-center">
+
+          <app-loading-spinner *ngIf="loading"
+                               size="sm"
+                               color="white"
+                               class="mr-2">
+          </app-loading-spinner>
+
+          {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="btn btn-secondary">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

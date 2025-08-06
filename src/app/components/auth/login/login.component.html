@@ -1,0 +1,98 @@
+<div>
+  <!-- Header -->
+  <div class="text-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-900">
+      Connexion
+    </h2>
+    <p class="text-gray-600 mt-2">
+      Connectez-vous à votre compte
+    </p>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error"
+       class="bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-lg mb-4">
+    {{ error }}
+  </div>
+
+  <!-- Login form -->
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+    <!-- Email -->
+    <div>
+      <label class="form-label" for="email">
+        Adresse email
+      </label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        class="form-input"
+        [class.border-danger-300]="getFieldError('email')"
+        placeholder="votre@email.com">
+      <p *ngIf="getFieldError('email')" class="text-danger-600 text-sm mt-1">
+        {{ getFieldError('email') }}
+      </p>
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label class="form-label" for="password">
+        Mot de passe
+      </label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        class="form-input"
+        [class.border-danger-300]="getFieldError('password')"
+        placeholder="••••••••">
+      <p *ngIf="getFieldError('password')" class="text-danger-600 text-sm mt-1">
+        {{ getFieldError('password') }}
+      </p>
+    </div>
+
+    <!-- Remember me -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <input
+          id="rememberMe"
+          type="checkbox"
+          formControlName="rememberMe"
+          class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500">
+        <label for="rememberMe" class="ml-2 text-sm text-gray-600">
+          Se souvenir de moi
+        </label>
+      </div>
+      <a href="#" class="text-sm text-primary-600 hover:text-primary-500">
+        Mot de passe oublié ?
+      </a>
+    </div>
+
+    <!-- Submit button -->
+    <button
+      type="submit"
+      [disabled]="loading"
+      class="w-full btn btn-primary flex items-center justify-center">
+
+      <app-loading-spinner *ngIf="loading"
+                           size="sm"
+                           color="white"
+                           class="mr-2">
+      </app-loading-spinner>
+
+      <span *ngIf="!loading">Se connecter</span>
+      <span *ngIf="loading">Connexion en cours...</span>
+    </button>
+  </form>
+
+  <!-- Footer -->
+  <div class="text-center mt-6">
+    <p class="text-gray-600">
+      Pas encore de compte ?
+      <a href="#" class="text-primary-600 hover:text-primary-500 font-medium">
+        Contactez l'administrateur
+      </a>
+    </p>
+  </div>
+</div>

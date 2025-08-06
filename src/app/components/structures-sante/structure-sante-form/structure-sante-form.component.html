@@ -1,0 +1,224 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">
+        {{ isEditMode ? 'Modifier' : 'Nouvelle' }} Structure de Santé
+      </h1>
+      <p class="text-gray-600">
+        {{ isEditMode ? 'Modifiez les informations de la structure' : 'Créez une nouvelle structure de santé' }}
+      </p>
+    </div>
+    <button (click)="cancel()" class="btn btn-secondary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      Annuler
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center py-8">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Formulaire -->
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" class="space-y-6">
+
+    <!-- Informations du responsable -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations du responsable</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+          <label class="form-label">Nom *</label>
+          <input type="text"
+                 formControlName="nom"
+                 [formGroup]="userForm"
+                 class="form-input"
+                 [class.border-red-500]="userForm.get('nom')?.invalid && userForm.get('nom')?.touched">
+          <div *ngIf="userForm.get('nom')?.invalid && userForm.get('nom')?.touched"
+               class="text-red-600 text-sm mt-1">
+            Le nom est requis (minimum 2 caractères)
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Prénom *</label>
+          <input type="text"
+                 formControlName="prenom"
+                 [formGroup]="userForm"
+                 class="form-input"
+                 [class.border-red-500]="userForm.get('prenom')?.invalid && userForm.get('prenom')?.touched">
+          <div *ngIf="userForm.get('prenom')?.invalid && userForm.get('prenom')?.touched"
+               class="text-red-600 text-sm mt-1">
+            Le prénom est requis (minimum 2 caractères)
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Email *</label>
+          <input type="email"
+                 formControlName="email"
+                 [formGroup]="userForm"
+                 class="form-input"
+                 [class.border-red-500]="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+               class="text-red-600 text-sm mt-1">
+            Email valide requis
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Téléphone *</label>
+          <input type="tel"
+                 formControlName="telephone"
+                 [formGroup]="userForm"
+                 placeholder="+221 XX XXX XX XX"
+                 class="form-input"
+                 [class.border-red-500]="userForm.get('telephone')?.invalid && userForm.get('telephone')?.touched">
+          <div *ngIf="userForm.get('telephone')?.invalid && userForm.get('telephone')?.touched"
+               class="text-red-600 text-sm mt-1">
+            Numéro de téléphone requis
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Région *</label>
+          <select formControlName="region"
+                  [formGroup]="userForm"
+                  class="form-select"
+                  [class.border-red-500]="userForm.get('region')?.invalid && userForm.get('region')?.touched">
+            <option value="">Sélectionnez une région</option>
+            <option *ngFor="let region of regionsSenegal" [value]="region">
+              {{ region }}
+            </option>
+          </select>
+          <div *ngIf="userForm.get('region')?.invalid && userForm.get('region')?.touched"
+               class="text-red-600 text-sm mt-1">
+            La région est requise
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Département</label>
+          <select formControlName="commune"
+                  [formGroup]="userForm"
+                  class="form-select"
+                  [disabled]="selectedDepartements.length === 0">
+            <option value="">Sélectionnez un département</option>
+            <option *ngFor="let dept of selectedDepartements" [value]="dept">
+              {{ dept }}
+            </option>
+          </select>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="form-label">Village/Quartier</label>
+          <input type="text"
+                 formControlName="village"
+                 [formGroup]="userForm"
+                 class="form-input">
+        </div>
+      </div>
+    </div>
+
+    <!-- Informations de la structure -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations de la structure</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+          <label class="form-label">Nom de la structure *</label>
+          <input type="text"
+                 formControlName="nomStructure"
+                 [formGroup]="structureForm"
+                 class="form-input"
+                 [class.border-red-500]="structureForm.get('nomStructure')?.invalid && structureForm.get('nomStructure')?.touched">
+          <div *ngIf="structureForm.get('nomStructure')?.invalid && structureForm.get('nomStructure')?.touched"
+               class="text-red-600 text-sm mt-1">
+            Le nom de la structure est requis (minimum 3 caractères)
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Type de structure *</label>
+          <select formControlName="typeStructure"
+                  [formGroup]="structureForm"
+                  class="form-select"
+                  [class.border-red-500]="structureForm.get('typeStructure')?.invalid && structureForm.get('typeStructure')?.touched">
+            <option value="">Sélectionnez un type</option>
+            <option *ngFor="let type of typesStructure" [value]="type">
+              {{ getTypeStructureLabel(type) }}
+            </option>
+          </select>
+          <div *ngIf="structureForm.get('typeStructure')?.invalid && structureForm.get('typeStructure')?.touched"
+               class="text-red-600 text-sm mt-1">
+            Le type de structure est requis
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Numéro d'agrément</label>
+          <input type="text"
+                 formControlName="numeroAgrement"
+                 [formGroup]="structureForm"
+                 class="form-input">
+        </div>
+
+        <div>
+          <label class="form-label">Capacité d'accueil</label>
+          <input type="number"
+                 formControlName="capaciteAccueil"
+                 [formGroup]="structureForm"
+                 min="1"
+                 class="form-input"
+                 [class.border-red-500]="structureForm.get('capaciteAccueil')?.invalid && structureForm.get('capaciteAccueil')?.touched">
+          <div *ngIf="structureForm.get('capaciteAccueil')?.invalid && structureForm.get('capaciteAccueil')?.touched"
+               class="text-red-600 text-sm mt-1">
+            La capacité doit être supérieure à 0
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="form-label">Adresse</label>
+          <input type="text"
+                 formControlName="adresse"
+                 [formGroup]="structureForm"
+                 class="form-input">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="form-label">Spécialités</label>
+          <input type="text"
+                 formControlName="specialites"
+                 [formGroup]="structureForm"
+                 placeholder="Ex: Pédiatrie, Gynécologie, Cardiologie..."
+                 class="form-input">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="form-label">Description</label>
+          <textarea formControlName="description"
+                    [formGroup]="structureForm"
+                    rows="4"
+                    class="form-input"
+                    placeholder="Description de la structure, services offerts..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-4">
+      <button type="button" (click)="cancel()" class="btn btn-secondary">
+        Annuler
+      </button>
+      <button type="submit"
+              class="btn btn-primary"
+              [disabled]="loading || !userForm.valid || !structureForm.valid">
+        <app-loading-spinner *ngIf="loading" size="sm" color="white" class="mr-2"></app-loading-spinner>
+        {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+      </button>
+    </div>
+  </form>
+</div>

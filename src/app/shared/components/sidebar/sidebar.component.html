@@ -1,0 +1,46 @@
+<aside class="fixed inset-y-0 left-0 z-50 transition-all duration-300 bg-white shadow-lg"
+       [class.w-64]="isOpen"
+       [class.w-16]="!isOpen">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between p-4 border-b">
+    <div class="flex items-center space-x-3" *ngIf="isOpen">
+      <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+        <span class="text-white font-bold text-sm">S&P</span>
+      </div>
+      <span class="font-semibold text-gray-800">Santé & Prévention</span>
+    </div>
+
+    <button (click)="onToggleSidebar()"
+            class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="p-4 space-y-2">
+    <a *ngFor="let item of menuItems"
+       [routerLink]="item.route"
+       routerLinkActive="bg-primary-50 text-primary-600 border-r-2 border-primary-600"
+       class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+
+      <!-- Icon placeholder - remplacez par vos vraies icônes -->
+      <div class="w-5 h-5 flex-shrink-0">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+        </svg>
+      </div>
+
+      <span *ngIf="isOpen" class="font-medium">{{ item.label }}</span>
+
+      <!-- Tooltip pour sidebar fermé -->
+      <div *ngIf="!isOpen"
+           class="absolute left-16 bg-gray-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+        {{ item.label }}
+      </div>
+    </a>
+  </nav>
+</aside>

@@ -1,0 +1,206 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Campagnes</h1>
+      <p class="text-gray-600">Gérez vos campagnes de sensibilisation et prévention</p>
+    </div>
+    <button routerLink="/campagnes/new" class="btn btn-primary">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouvelle campagne
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <!-- Search -->
+      <div>
+        <label class="form-label">Rechercher</label>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          placeholder="Nom, description, objectifs..."
+          class="form-input">
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label class="form-label">Statut</label>
+        <select [(ngModel)]="selectedStatus"
+                (change)="onFilterChange()"
+                class="form-input">
+          <option value="">Tous les statuts</option>
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label class="form-label">Type de campagne</label>
+        <select [(ngModel)]="selectedType"
+                (change)="onFilterChange()"
+                class="form-input">
+          <option value="">Tous les types</option>
+          <option *ngFor="let option of typeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Campagnes Grid -->
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let campagne of getPaginatedCampagnes()"
+         class="card hover:shadow-lg transition-shadow cursor-pointer"
+         [routerLink]="['/campagnes', campagne.id]">
+
+      <!-- Header -->
+      <div class="flex justify-between items-start mb-4">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ campagne.nom }}</h3>
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                [class]="getStatusClass(campagne.status || StatusCampagne.BROUILLON)">
+            {{ getStatusLabel(campagne.status || StatusCampagne.BROUILLON) }}
+          </span>
+        </div>
+
+        <!-- Dropdown menu -->
+        <div class="relative">
+          <button class="p-2 hover:bg-gray-100 rounded-lg">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+        {{ campagne.description || 'Aucune description' }}
+      </p>
+
+      <!-- Type -->
+      <div class="mb-4">
+        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          {{ getTypeLabel(campagne.typeCampagne) }}
+        </span>
+      </div>
+
+      <!-- Progress -->
+      <div class="mb-4" *ngIf="campagne.progression !== undefined">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-sm font-medium text-gray-700">Progression</span>
+          <span class="text-sm text-gray-600">{{ campagne.progression }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="h-2 rounded-full transition-all duration-300"
+               [class]="getProgressColor(campagne.progression || 0)"
+               [style.width.%]="campagne.progression || 0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta info -->
+      <div class="flex justify-between items-center text-sm text-gray-500">
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span>{{ campagne.dateDebut | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <div class="flex items-center space-x-2" *ngIf="campagne.nombreParticipants">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <span>{{ campagne.nombreParticipants }}</span>
+        </div>
+      </div>
+
+      <!-- Actions (prevent event bubbling) -->
+      <div class="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-200">
+        <button [routerLink]="['/campagnes', campagne.id, 'edit']"
+                (click)="$event.stopPropagation()"
+                class="text-primary-600 hover:text-primary-700 text-sm">
+          Modifier
+        </button>
+        <button (click)="$event.stopPropagation(); confirmDelete(campagne)"
+                class="text-danger-600 hover:text-danger-700 text-sm">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalItems > itemsPerPage" class="card">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-gray-700">
+        Affichage de {{ (currentPage - 1) * itemsPerPage + 1 }} à
+        {{ Math.min(currentPage * itemsPerPage, totalItems) }} sur {{ totalItems }} résultats
+      </div>
+
+      <div class="flex space-x-1">
+        <button (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 1"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Précédent
+        </button>
+
+        <button *ngFor="let page of [].constructor(getTotalPages()); let i = index"
+                (click)="goToPage(i + 1)"
+                [class.bg-primary-600]="currentPage === i + 1"
+                [class.text-white]="currentPage === i + 1"
+                [class.bg-white]="currentPage !== i + 1"
+                [class.text-gray-700]="currentPage !== i + 1"
+                class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+          {{ i + 1 }}
+        </button>
+
+        <button (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === getTotalPages()"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Suivant
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && filteredCampagnes.length === 0" class="card text-center py-12">
+    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune campagne trouvée</h3>
+    <p class="text-gray-600 mb-4">Aucune campagne ne correspond à vos critères de recherche.</p>
+    <button routerLink="/campagnes/new" class="btn btn-primary">
+      Créer votre première campagne
+    </button>
+  </div>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<!-- Delete Confirmation Dialog -->
+<app-confirm-dialog
+  [isOpen]="showDeleteDialog"
+  title="Supprimer la campagne"
+  [message]="'Êtes-vous sûr de vouloir supprimer la campagne ' + (campagneToDelete?.nom) + ' ? Cette action est irréversible.'"
+  confirmText="Supprimer"
+  cancelText="Annuler"
+  type="danger"
+  (confirm)="onDeleteConfirmed()"
+  (cancel)="onDeleteCancelled()">
+</app-confirm-dialog>

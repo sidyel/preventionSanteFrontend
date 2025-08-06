@@ -1,0 +1,191 @@
+<div class="space-y-6">
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- User Details -->
+  <div *ngIf="!loading && user" class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-start">
+      <div class="flex items-center space-x-4">
+        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+          <span class="text-primary-600 font-bold text-xl">
+            {{ user.prenom.charAt(0) }}{{ user.nom.charAt(0) }}
+          </span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">
+            {{ user.prenom }} {{ user.nom }}
+          </h1>
+          <p class="text-gray-600">{{ user.email }}</p>
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2"
+                [class.bg-success-100]="user.actif !== false"
+                [class.text-success-800]="user.actif !== false"
+                [class.bg-gray-100]="user.actif === false"
+                [class.text-gray-800]="user.actif === false">
+            {{ user.actif !== false ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex space-x-3">
+        <button (click)="onEdit()" class="btn btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Modifier
+        </button>
+
+        <button (click)="toggleUserStatus()"
+                class="btn"
+                [class.btn-warning]="user.actif !== false"
+                [class.btn-success]="user.actif === false">
+          {{ user.actif !== false ? 'Désactiver' : 'Activer' }}
+        </button>
+
+        <button (click)="confirmDelete()" class="btn btn-danger">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Personal Info -->
+      <div class="card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations personnelles</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-sm font-medium text-gray-500">Prénom</label>
+            <p class="text-gray-900">{{ user.prenom }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500">Nom</label>
+            <p class="text-gray-900">{{ user.nom }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500">Type d'acteur</label>
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              {{ getTypeActeurLabel(user.typeActeur) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Contact</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-sm font-medium text-gray-500">Email</label>
+            <p class="text-gray-900">{{ user.email }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500">Téléphone</label>
+            <p class="text-gray-900">{{ user.telephone }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500">Date de création</label>
+            <p class="text-gray-900">{{ user.dateCreation | date:'dd/MM/yyyy' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Info -->
+      <div class="card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Localisation</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-sm font-medium text-gray-500">Région</label>
+            <p class="text-gray-900">{{ user.region || 'Non spécifié' }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500">Commune</label>
+            <p class="text-gray-900">{{ user.commune || 'Non spécifié' }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500">Village</label>
+            <p class="text-gray-900">{{ user.village || 'Non spécifié' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activities -->
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Activités récentes</h3>
+      <div class="space-y-4">
+        <div *ngIf="user.campagnes && user.campagnes.length > 0; else noCampaigns"
+             class="space-y-3">
+          <div *ngFor="let campagne of user.campagnes.slice(0, 5)"
+               class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-medium text-gray-900">{{ campagne.nom }}</h4>
+                <p class="text-sm text-gray-600">{{ campagne.typeCampagne }}</p>
+              </div>
+            </div>
+            <span class="text-sm text-gray-500">
+              {{ campagne.dateCreation | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+
+        <ng-template #noCampaigns>
+          <div class="text-center py-8">
+            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            <p class="text-gray-600">Aucune campagne créée</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="flex justify-start">
+      <button routerLink="/users" class="btn btn-secondary">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Retour à la liste
+      </button>
+    </div>
+  </div>
+
+  <!-- Not Found -->
+  <div *ngIf="!loading && !user" class="text-center py-12">
+    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Utilisateur introuvable</h3>
+    <p class="text-gray-600 mb-4">L'utilisateur demandé n'existe pas ou a été supprimé.</p>
+    <button routerLink="/users" class="btn btn-primary">
+      Retour à la liste
+    </button>
+  </div>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<app-confirm-dialog
+  [isOpen]="showDeleteDialog"
+  title="Supprimer l'utilisateur"
+  [message]="'Êtes-vous sûr de vouloir supprimer ' + (user?.prenom + ' ' + user?.nom) + ' ? Cette action est irréversible.'"
+  confirmText="Supprimer"
+  cancelText="Annuler"
+  type="danger"
+  (confirm)="onDeleteConfirmed()"
+  (cancel)="onDeleteCancelled()">
+</app-confirm-dialog>

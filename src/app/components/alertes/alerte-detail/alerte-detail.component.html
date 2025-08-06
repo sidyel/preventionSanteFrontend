@@ -1,0 +1,329 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && alerte" class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-start">
+      <div class="flex items-center space-x-4">
+        <button (click)="goBack()" class="btn btn-secondary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Retour
+        </button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">{{ alerte.titre }}</h1>
+          <div class="flex items-center space-x-4 mt-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [class]="getUrgenceClass(alerte.niveauUrgence)">
+              {{ getUrgenceLabel(alerte.niveauUrgence) }}
+            </span>
+            <span class="text-sm text-gray-500">{{ getTypeLabel(alerte.typeAlerte) }}</span>
+            <span class="text-sm font-medium" [class]="getStatusColor()">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      [attr.d]="alerte.active && !isExpired() ? 'M5 13l4 4L19 7' : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'"></path>
+              </svg>
+              {{ getStatusLabel() }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="flex space-x-3">
+        <button *ngIf="alerte.active && !isExpired()" (click)="openDiffusionModal()" class="btn btn-warning">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+          </svg>
+          Diffuser
+        </button>
+        <button *ngIf="alerte.active" (click)="desactiverAlerte()" class="btn btn-secondary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+          </svg>
+          Désactiver
+        </button>
+        <button (click)="editAlerte()" class="btn btn-primary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Modifier
+        </button>
+        <button (click)="deleteAlerte()" class="btn btn-danger">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Destinataires</dt>
+              <dd class="text-lg font-medium text-gray-900">{{ totalDestinataires }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Accusés de réception</dt>
+              <dd class="text-lg font-medium text-gray-900">{{ accusesReception }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Taux de réception</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                {{ totalDestinataires > 0 ? Math.round((accusesReception / totalDestinataires) * 100) : 0 }}%
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div class="mt-4" *ngIf="totalDestinataires > 0">
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="bg-purple-600 h-2 rounded-full"
+                 [style.width.%]="(accusesReception / totalDestinataires) * 100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Content -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Description de l'alerte</h2>
+      <div class="prose max-w-none">
+        <p class="text-gray-900 whitespace-pre-wrap">{{ alerte.description }}</p>
+      </div>
+    </div>
+
+    <!-- Alert Details -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Détails</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Type d'alerte</label>
+          <p class="mt-1 text-sm text-gray-900">{{ getTypeLabel(alerte.typeAlerte) }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Niveau d'urgence</label>
+          <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                [class]="getUrgenceClass(alerte.niveauUrgence)">
+            {{ getUrgenceLabel(alerte.niveauUrgence) }}
+          </span>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Zone affectée</label>
+          <p class="mt-1 text-sm text-gray-900">{{ alerte.zoneAffectee || 'Non spécifiée' }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Campagne associée</label>
+          <p class="mt-1 text-sm text-gray-900">{{ alerte.campagne?.nom || 'Aucune' }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-500">Date de création</label>
+          <p class="mt-1 text-sm text-gray-900">{{ alerte.dateCreation | date:'dd/MM/yyyy à HH:mm' }}</p>
+        </div>
+        <div *ngIf="alerte.dateExpiration">
+          <label class="block text-sm font-medium text-gray-500">Date d'expiration</label>
+          <p class="mt-1 text-sm text-gray-900"
+             [class]="isExpired() ? 'text-red-600' : 'text-gray-900'">
+            {{ alerte.dateExpiration | date:'dd/MM/yyyy à HH:mm' }}
+            <span *ngIf="isExpired()" class="text-red-600 font-medium"> (Expirée)</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preventive Measures -->
+    <div class="card" *ngIf="alerte.mesuresPreventives || alerte.consignesSuivre">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Mesures et consignes</h2>
+      <div class="space-y-6">
+        <div *ngIf="alerte.mesuresPreventives">
+          <label class="block text-sm font-medium text-gray-500 mb-2">Mesures préventives</label>
+          <div class="prose max-w-none">
+            <p class="text-gray-900 whitespace-pre-wrap">{{ alerte.mesuresPreventives }}</p>
+          </div>
+        </div>
+        <div *ngIf="alerte.consignesSuivre">
+          <label class="block text-sm font-medium text-gray-500 mb-2">Consignes à suivre</label>
+          <div class="prose max-w-none">
+            <p class="text-gray-900 whitespace-pre-wrap">{{ alerte.consignesSuivre }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sender Information -->
+    <div class="card" *ngIf="alerte.expediteur">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Expéditeur</h2>
+      <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0">
+          <div class="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
+            <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium text-gray-900">
+            {{ alerte.expediteur.prenom }} {{ alerte.expediteur.nom }}
+          </h3>
+          <p class="text-sm text-gray-500">{{ alerte.expediteur.email }}</p>
+          <p class="text-sm text-gray-500">{{ alerte.expediteur.telephone }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipients -->
+    <div class="card" *ngIf="alerte.destinataires && alerte.destinataires.length > 0">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        Destinataires ({{ alerte.destinataires.length }})
+      </h2>
+      <div class="space-y-2">
+        <div *ngFor="let dest of alerte.destinataires"
+             class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <div class="flex-shrink-0">
+              <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <svg class="h-4 w-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-900">
+                {{ dest.destinataire.prenom }} {{ dest.destinataire.nom }}
+              </p>
+              <p class="text-xs text-gray-500">{{ dest.destinataire.email }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="flex items-center space-x-2">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                    [class]="dest.lu ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'">
+                {{ dest.lu ? 'Lu' : 'Non lu' }}
+              </span>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                    [class]="dest.accuse ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                {{ dest.accuse ? 'Accusé' : 'En attente' }}
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1" *ngIf="dest.dateLecture">
+              Lu le {{ dest.dateLecture | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+            <p class="text-xs text-gray-500" *ngIf="dest.dateAccuse">
+              Accusé le {{ dest.dateAccuse | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diffusion Modal -->
+  <div *ngIf="showDiffusionModal" class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Diffuser l'alerte</h3>
+
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-4">
+            <p class="text-sm text-gray-600">
+              Sélectionnez les nouveaux destinataires pour cette alerte :
+            </p>
+            <button type="button"
+                    (click)="selectAllDestinataires($event)"
+                    class="text-sm text-primary-600 hover:text-primary-800">
+              Sélectionner tout
+            </button>
+          </div>
+
+          <div class="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-4">
+            <div class="space-y-2">
+              <div *ngFor="let user of destinataires" class="flex items-center">
+                <input
+                  type="checkbox"
+                  [id]="'diff-user-' + user.id"
+                  [checked]="selectedDestinataires.includes(user.id!)"
+                  (change)="onDestinataireChange(user.id!, $event)"
+                  class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                <label [for]="'diff-user-' + user.id" class="ml-3 text-sm text-gray-700 flex-1">
+                  <div class="flex justify-between">
+                    <span>{{ user.prenom }} {{ user.nom }}</span>
+                    <span class="text-gray-500">{{ user.typeActeur }}</span>
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    {{ user.email }} • {{ user.region }}
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-sm text-gray-600 mt-2">
+            {{ selectedDestinataires.length }} destinataire(s) sélectionné(s)
+          </div>
+        </div>
+
+        <div class="flex space-x-3">
+          <button (click)="showDiffusionModal = false" class="flex-1 btn btn-secondary">
+            Annuler
+          </button>
+          <button (click)="diffuserAlerte()"
+                  [disabled]="selectedDestinataires.length === 0 || diffusingAlerte"
+                  class="flex-1 btn btn-danger">
+            <app-loading-spinner *ngIf="diffusingAlerte" size="sm" color="white" class="mr-2"></app-loading-spinner>
+            Diffuser l'alerte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="!loading && !alerte" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">Alerte introuvable</h3>
+    <p class="mt-1 text-sm text-gray-500">L'alerte demandée n'existe pas ou a été supprimée.</p>
+    <div class="mt-6">
+      <button (click)="goBack()" class="btn btn-primary">
+        Retour aux alertes
+      </button>
+    </div>
+  </div>
+</div>

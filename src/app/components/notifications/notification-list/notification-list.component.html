@@ -1,0 +1,107 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
+      <p class="text-gray-600">
+        {{ getUnreadCount() }} notification{{ getUnreadCount() !== 1 ? 's' : '' }} non lue{{ getUnreadCount() !== 1 ? 's' : '' }}
+      </p>
+    </div>
+    <button (click)="markAllAsRead()"
+            [disabled]="getUnreadCount() === 0"
+            class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+      Tout marquer comme lu
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Notifications List -->
+  <div *ngIf="!loading" class="space-y-3">
+    <div *ngFor="let notification of notifications"
+         class="card hover:shadow-lg transition-shadow cursor-pointer"
+         [class.border-l-4]="!notification.lu"
+         [class.border-primary-500]="!notification.lu"
+         [class.bg-blue-50]="!notification.lu"
+         (click)="navigateToAction(notification)">
+
+      <div class="flex items-start justify-between">
+        <div class="flex items-start space-x-4 flex-1">
+
+          <!-- Icon -->
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+               [class]="getTypeOption(notification.typeNotification).class">
+            <!-- Icône générique - remplacez par vos vraies icônes -->
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 17h5l-5 5v-5z M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path>
+            </svg>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center space-x-2 mb-1">
+              <h3 class="text-sm font-semibold text-gray-900"
+                  [class.font-bold]="!notification.lu">
+                {{ notification.titre }}
+              </h3>
+
+              <!-- Unread indicator -->
+              <div *ngIf="!notification.lu"
+                   class="w-2 h-2 bg-primary-500 rounded-full flex-shrink-0">
+              </div>
+            </div>
+
+            <p class="text-gray-600 text-sm mb-2" *ngIf="notification.contenu">
+              {{ notification.contenu }}
+            </p>
+
+            <div class="flex items-center space-x-4">
+              <!-- Type badge -->
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                    [class]="getTypeOption(notification.typeNotification).class">
+                {{ getTypeOption(notification.typeNotification).label }}
+              </span>
+
+              <!-- Date -->
+              <span class="text-xs text-gray-500">
+                {{ notification.dateCreation | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+
+              <!-- Read status -->
+              <span *ngIf="notification.lu" class="text-xs text-green-600">
+                Lu le {{ notification.dateLecture | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center space-x-2 ml-4">
+          <button *ngIf="!notification.lu"
+                  (click)="$event.stopPropagation(); markAsRead(notification)"
+                  class="text-primary-600 hover:text-primary-700 text-sm">
+            Marquer comme lu
+          </button>
+
+          <button (click)="$event.stopPropagation(); deleteNotification(notification)"
+                  class="text-danger-600 hover:text-danger-700 text-sm">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && notifications.length === 0" class="card text-center py-12">
+    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path>
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune notification</h3>
+    <p class="text-gray-600">Vous n'avez aucune notification pour le moment.</p>
+  </div>
+</div>

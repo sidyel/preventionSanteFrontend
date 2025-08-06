@@ -1,0 +1,202 @@
+<div class="space-y-6">
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center py-8">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Contenu -->
+  <div *ngIf="!loading && structure" class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-start">
+      <div>
+        <button (click)="goBack()" class="text-primary-600 hover:text-primary-800 mb-4">
+          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Retour à la liste
+        </button>
+        <h1 class="text-2xl font-bold text-gray-900">{{ structure.nomStructure }}</h1>
+        <p class="text-gray-600">{{ getTypeStructureLabel(structure.typeStructure) }}</p>
+      </div>
+      <div class="flex space-x-3">
+        <button (click)="editStructure()" class="btn btn-secondary">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Modifier
+        </button>
+        <button (click)="confirmDelete()" class="btn btn-danger">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Supprimer
+        </button>
+      </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Informations de la structure -->
+      <div class="lg:col-span-2 card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations de la structure</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Nom de la structure</label>
+            <p class="text-gray-900">{{ structure.nomStructure }}</p>
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Type</label>
+            <p class="text-gray-900">{{ getTypeStructureLabel(structure.typeStructure) }}</p>
+          </div>
+
+          <div *ngIf="structure.numeroAgrement">
+            <label class="text-sm font-medium text-gray-500">Numéro d'agrément</label>
+            <p class="text-gray-900">{{ structure.numeroAgrement }}</p>
+          </div>
+
+          <div *ngIf="structure.capaciteAccueil">
+            <label class="text-sm font-medium text-gray-500">Capacité d'accueil</label>
+            <p class="text-gray-900">{{ structure.capaciteAccueil }} personnes</p>
+          </div>
+
+          <div *ngIf="structure.adresse" class="md:col-span-2">
+            <label class="text-sm font-medium text-gray-500">Adresse</label>
+            <p class="text-gray-900">{{ structure.adresse }}</p>
+          </div>
+
+          <div *ngIf="structure.specialites" class="md:col-span-2">
+            <label class="text-sm font-medium text-gray-500">Spécialités</label>
+            <p class="text-gray-900">{{ structure.specialites }}</p>
+          </div>
+
+          <div *ngIf="structure.description" class="md:col-span-2">
+            <label class="text-sm font-medium text-gray-500">Description</label>
+            <p class="text-gray-900">{{ structure.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations du responsable -->
+      <div class="card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Responsable</h2>
+        <div class="space-y-4">
+
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">{{ structure.user.prenom }} {{ structure.user.nom }}</p>
+              <p class="text-sm text-gray-500">Responsable</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Email</label>
+            <p class="text-gray-900">
+              <a href="mailto:{{ structure.user.email }}" class="text-primary-600 hover:text-primary-800">
+                {{ structure.user.email }}
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Téléphone</label>
+            <p class="text-gray-900">
+              <a href="tel:{{ structure.user.telephone }}" class="text-primary-600 hover:text-primary-800">
+                {{ structure.user.telephone }}
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Localisation</label>
+            <div class="text-gray-900">
+              <p>{{ structure.user.region }}</p>
+              <p *ngIf="structure.user.commune" class="text-sm text-gray-600">{{ structure.user.commune }}</p>
+              <p *ngIf="structure.user.village" class="text-sm text-gray-600">{{ structure.user.village }}</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Statut</label>
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                  [class]="structure.user.actif ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+              {{ structure.user.actif ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-500">Date de création</label>
+            <p class="text-gray-900">{{ structure.user.dateCreation | date:'dd/MM/yyyy' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="card">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-primary-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Nouveau message</span>
+        </button>
+
+        <button class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-warning-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Envoyer alerte</span>
+        </button>
+
+        <button class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-success-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Créer campagne</span>
+        </button>
+
+        <button class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <svg class="w-8 h-8 text-info-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span class="text-sm font-medium text-gray-700">Voir statistiques</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="!loading && !structure" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">Structure introuvable</h3>
+    <p class="mt-1 text-sm text-gray-500">La structure demandée n'existe pas ou a été supprimée.</p>
+    <div class="mt-6">
+      <button (click)="goBack()" class="btn btn-primary">
+        Retour à la liste
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog de confirmation de suppression -->
+<app-confirm-dialog
+  [isOpen]="showDeleteDialog"
+  title="Supprimer la structure"
+confirmText="Supprimer"
+cancelText="Annuler"
+type="danger"
+(confirm)="deleteStructure()"
+(cancel)="cancelDelete()">
+</app-confirm-dialog>

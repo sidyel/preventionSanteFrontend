@@ -1,0 +1,200 @@
+<div class="max-w-2xl">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">
+      {{ isEditMode ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
+    </h1>
+    <p class="text-gray-600">
+      {{ isEditMode ? 'Modifiez les informations de l\'utilisateur' : 'Créez un nouvel utilisateur' }}
+    </p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading && isEditMode" class="flex justify-center items-center py-12">
+    <app-loading-spinner size="lg"></app-loading-spinner>
+  </div>
+
+  <!-- Form -->
+  <div *ngIf="!loading || !isEditMode" class="card">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <!-- Personal Info -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Prénom -->
+        <div>
+          <label class="form-label" for="prenom">
+            Prénom *
+          </label>
+          <input
+            id="prenom"
+            type="text"
+            formControlName="prenom"
+            class="form-input"
+            [class.border-danger-300]="getFieldError('prenom')"
+            placeholder="Prénom">
+          <p *ngIf="getFieldError('prenom')" class="text-danger-600 text-sm mt-1">
+            {{ getFieldError('prenom') }}
+          </p>
+        </div>
+
+        <!-- Nom -->
+        <div>
+          <label class="form-label" for="nom">
+            Nom *
+          </label>
+          <input
+            id="nom"
+            type="text"
+            formControlName="nom"
+            class="form-input"
+            [class.border-danger-300]="getFieldError('nom')"
+            placeholder="Nom">
+          <p *ngIf="getFieldError('nom')" class="text-danger-600 text-sm mt-1">
+            {{ getFieldError('nom') }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Email -->
+        <div>
+          <label class="form-label" for="email">
+            Adresse email *
+          </label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-input"
+            [class.border-danger-300]="getFieldError('email')"
+            placeholder="email@exemple.com">
+          <p *ngIf="getFieldError('email')" class="text-danger-600 text-sm mt-1">
+            {{ getFieldError('email') }}
+          </p>
+        </div>
+
+        <!-- Téléphone -->
+        <div>
+          <label class="form-label" for="telephone">
+            Téléphone *
+          </label>
+          <input
+            id="telephone"
+            type="tel"
+            formControlName="telephone"
+            class="form-input"
+            [class.border-danger-300]="getFieldError('telephone')"
+            placeholder="+221 XX XXX XX XX">
+          <p *ngIf="getFieldError('telephone')" class="text-danger-600 text-sm mt-1">
+            {{ getFieldError('telephone') }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Type Acteur -->
+      <div>
+        <label class="form-label" for="typeActeur">
+          Type d'acteur *
+        </label>
+        <select
+          id="typeActeur"
+          formControlName="typeActeur"
+          class="form-input"
+          [class.border-danger-300]="getFieldError('typeActeur')">
+          <option value="">Sélectionnez un type</option>
+          <option *ngFor="let option of typeActeurOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <p *ngIf="getFieldError('typeActeur')" class="text-danger-600 text-sm mt-1">
+          {{ getFieldError('typeActeur') }}
+        </p>
+      </div>
+
+      <!-- Location -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Localisation</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Région -->
+          <div>
+            <label class="form-label" for="region">
+              Région
+            </label>
+            <input
+              id="region"
+              type="text"
+              formControlName="region"
+              class="form-input"
+              placeholder="Région">
+          </div>
+
+          <!-- Commune -->
+          <div>
+            <label class="form-label" for="commune">
+              Commune
+            </label>
+            <input
+              id="commune"
+              type="text"
+              formControlName="commune"
+              class="form-input"
+              placeholder="Commune">
+          </div>
+
+          <!-- Village -->
+          <div>
+            <label class="form-label" for="village">
+              Village
+            </label>
+            <input
+              id="village"
+              type="text"
+              formControlName="village"
+              class="form-input"
+              placeholder="Village">
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div *ngIf="isEditMode">
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            formControlName="actif"
+            class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500">
+          <span class="ml-2 text-sm text-gray-700">Utilisateur actif</span>
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex space-x-4 pt-6">
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="btn btn-primary flex items-center">
+
+          <app-loading-spinner *ngIf="loading"
+                               size="sm"
+                               color="white"
+                               class="mr-2">
+          </app-loading-spinner>
+
+          {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="btn btn-secondary">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
