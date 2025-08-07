@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 import {DashboardData} from "../models/DashboardData";
+import {environmentProd} from "../../environments/environment.prod";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = `${environment.apiUrl}/dashboard`;
+  private apiUrl = `${environmentProd.apiUrl}/dashboard`;
 
   constructor(private http: HttpClient) {}
 

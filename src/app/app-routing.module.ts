@@ -22,9 +22,6 @@ import { OngFormComponent } from './components/ongs/ong-form/ong-form.component'
 import { OngDetailComponent } from './components/ongs/ong-detail/ong-detail.component';
 
 // Population Rurale
-import { PopulationRuraleListComponent } from './components/population-rurale/population-rurale-list/population-rurale-list.component';
-import { PopulationRuraleFormComponent } from './components/population-rurale/population-rurale-form/population-rurale-form.component';
-import { PopulationRuraleDetailComponent } from './components/population-rurale/population-rurale-detail/population-rurale-detail.component';
 
 // Campagnes
 import { CampagneListComponent } from './components/campagnes/campagne-list/campagne-list.component';
@@ -79,11 +76,7 @@ const routes: Routes = [
       { path: 'ongs/:id', component: OngDetailComponent },
       { path: 'ongs/:id/edit', component: OngFormComponent },
 
-      // Population Rurale routes
-      { path: 'population-rurale', component: PopulationRuraleListComponent },
-      { path: 'population-rurale/new', component: PopulationRuraleFormComponent },
-      { path: 'population-rurale/:id', component: PopulationRuraleDetailComponent },
-      { path: 'population-rurale/:id/edit', component: PopulationRuraleFormComponent },
+
 
       // Campagnes routes
       { path: 'campagnes', component: CampagneListComponent },

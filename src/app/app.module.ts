@@ -34,10 +34,6 @@ import { OngListComponent } from './components/ongs/ong-list/ong-list.component'
 import { OngFormComponent } from './components/ongs/ong-form/ong-form.component';
 import { OngDetailComponent } from './components/ongs/ong-detail/ong-detail.component';
 
-// Population Rurale Components
-import { PopulationRuraleListComponent } from './components/population-rurale/population-rurale-list/population-rurale-list.component';
-import { PopulationRuraleFormComponent } from './components/population-rurale/population-rurale-form/population-rurale-form.component';
-import { PopulationRuraleDetailComponent } from './components/population-rurale/population-rurale-detail/population-rurale-detail.component';
 
 // Campagne Components
 import { CampagneListComponent } from './components/campagnes/campagne-list/campagne-list.component';
@@ -96,10 +92,7 @@ import { AcceuilComponent } from './acceuil/acceuil.component';
     OngListComponent,
     OngFormComponent,
     OngDetailComponent,
-    // Population Rurale
-    PopulationRuraleListComponent,
-    PopulationRuraleFormComponent,
-    PopulationRuraleDetailComponent,
+
     // Campagnes
     CampagneListComponent,
     CampagneFormComponent,
