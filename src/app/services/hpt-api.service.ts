@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class HptApiService {
-  private readonly API_BASE_URL = 'http://localhost:8082/api';
+  private readonly API_BASE_URL = 'https://preventionsantebackend.onrender.com/api';
 
   getApiUrl(endpoint: string): string {
     return `${this.API_BASE_URL}/${endpoint}`;

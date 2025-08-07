@@ -37,11 +37,7 @@ export class SidebarComponent {
       icon: 'heart',
       route: '/ongs'
     },
-    {
-      label: 'Population Rurale',
-      icon: 'users',
-      route: '/population-rurale'
-    },
+
     {
       label: 'Campagnes',
       icon: 'megaphone',

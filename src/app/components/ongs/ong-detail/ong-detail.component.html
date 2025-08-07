@@ -1,29 +1,32 @@
-<!--<div class="space-y-6">
- <div class="flex justify-between items-center">
-   <div>
-     <h1 class="text-2xl font-bold text-gray-900">Détails de l'ONG</h1>
-     <p class="text-gray-600">Informations détaillées de l'organisation</p>
-   </div>
-   <div class="flex space-x-3">
-     <button (click)="goBack()" class="btn btn-secondary">
-       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-       </svg>
-       Retour
-     </button>
-     <button (click)="editOng()" class="btn btn-primary" *ngIf="ong && !loading">
-       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-       </svg>
-       Modifier
-     </button>
-   </div>
- </div>
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Détails de l'ONG</h1>
+      <p class="text-gray-600">Informations détaillées de l'organisation</p>
+    </div>
+    <div class="flex space-x-3">
+      <button (click)="goBack()" class="btn btn-secondary">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Retour
+      </button>
+      <button (click)="editOng()" class="btn btn-primary" *ngIf="ong && !loading">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        </svg>
+        Modifier
+      </button>
+    </div>
+  </div>
 
+  <!-- Loading -->
   <div *ngIf="loading" class="flex justify-center items-center py-12">
     <app-loading-spinner size="lg"></app-loading-spinner>
   </div>
 
+  <!-- Error State -->
   <div *ngIf="error && !loading" class="card bg-red-50 border-red-200">
     <div class="flex items-center">
       <svg class="w-5 h-5 text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,8 +39,10 @@
     </div>
   </div>
 
+  <!-- Content -->
   <div *ngIf="ong && !loading" class="space-y-6">
 
+    <!-- ONG Overview Card -->
     <div class="card">
       <div class="flex items-start justify-between">
         <div class="flex items-center space-x-4">
@@ -69,6 +74,7 @@
       </div>
     </div>
 
+    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="card text-center">
         <div class="text-2xl font-bold text-primary-600">
@@ -93,8 +99,10 @@
       </div>
     </div>
 
+    <!-- Information Details -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
+      <!-- Mission & Vision -->
       <div class="card">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Mission & Vision</h3>
         <div class="space-y-4">
@@ -112,6 +120,7 @@
         </div>
       </div>
 
+      <!-- Contact Information -->
       <div class="card">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Contact Principal</h3>
         <div class="space-y-3" *ngIf="ong.user">
@@ -152,6 +161,7 @@
       </div>
     </div>
 
+    <!-- Location Information -->
     <div class="card">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Localisation</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -178,6 +188,7 @@
       </div>
     </div>
 
+    <!-- Quick Actions -->
     <div class="card">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -216,4 +227,3 @@
     </div>
   </div>
 </div>
--->
