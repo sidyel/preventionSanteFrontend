@@ -11,7 +11,7 @@ export class AcceuilComponent {
     { label: 'Accueil', href: '#accueil' },
     { label: 'Services', href: '#services' },
     { label: 'Hôpitaux', href: 'hpt' },
-    { label: 'Dashboard', href: 'dashboard' },
+    { label: 'Dashboard', href: 'admin/dashboard' },
     { label: 'Contact', href: 'contact' }
   ];
 

@@ -21,8 +21,6 @@ import { OngListComponent } from './components/ongs/ong-list/ong-list.component'
 import { OngFormComponent } from './components/ongs/ong-form/ong-form.component';
 import { OngDetailComponent } from './components/ongs/ong-detail/ong-detail.component';
 
-// Population Rurale
-
 // Campagnes
 import { CampagneListComponent } from './components/campagnes/campagne-list/campagne-list.component';
 import { CampagneFormComponent } from './components/campagnes/campagne-form/campagne-form.component';
@@ -40,22 +38,33 @@ import { AlerteDetailComponent } from './components/alertes/alerte-detail/alerte
 
 // Notifications
 import { NotificationListComponent } from './components/notifications/notification-list/notification-list.component';
-import {DashboardComponent} from "./components/dashboard/dashboard/dashboard.component";
-import {HptDashboardComponent} from "./features/hpt-dashboard/hpt-dashboard.component";
-import {HptHospitalListComponent} from "./features/hpt-hospitals/hpt-hospital-list/hpt-hospital-list.component";
-import {HptHospitalDetailComponent} from "./features/hpt-hospitals/hpt-hospital-detail/hpt-hospital-detail.component";
-import {HptTicketListComponent} from "./features/hpt-tickets/hpt-ticket-list/hpt-ticket-list.component";
-import {HptTicketCreateComponent} from "./features/hpt-tickets/hpt-ticket-create/hpt-ticket-create.component";
-import {AcceuilComponent} from "./acceuil/acceuil.component";
+import { DashboardComponent } from "./components/dashboard/dashboard/dashboard.component";
+import { HptDashboardComponent } from "./features/hpt-dashboard/hpt-dashboard.component";
+import { HptHospitalListComponent } from "./features/hpt-hospitals/hpt-hospital-list/hpt-hospital-list.component";
+import { HptHospitalDetailComponent } from "./features/hpt-hospitals/hpt-hospital-detail/hpt-hospital-detail.component";
+import { HptTicketListComponent } from "./features/hpt-tickets/hpt-ticket-list/hpt-ticket-list.component";
+import { HptTicketCreateComponent } from "./features/hpt-tickets/hpt-ticket-create/hpt-ticket-create.component";
+import { AcceuilComponent } from "./acceuil/acceuil.component";
 
 const routes: Routes = [
+  // Page d'accueil publique
   { path: '', component: AcceuilComponent },
 
+  // Routes d'authentification
   {
-    path: '',
+    path: 'auth',
+    component: AuthLayoutComponent,
+    children: [
+      { path: 'login', component: LoginComponent }
+    ]
+  },
+
+  // Routes avec layout dashboard
+  {
+    path: 'admin',
     component: DashboardLayoutComponent,
     children: [
-      { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
 
       // Users routes
@@ -75,8 +84,6 @@ const routes: Routes = [
       { path: 'ongs/new', component: OngFormComponent },
       { path: 'ongs/:id', component: OngDetailComponent },
       { path: 'ongs/:id/edit', component: OngFormComponent },
-
-
 
       // Campagnes routes
       { path: 'campagnes', component: CampagneListComponent },
@@ -100,25 +107,26 @@ const routes: Routes = [
       { path: 'notifications', component: NotificationListComponent }
     ]
   },
+
+  // Routes HPT indépendantes (si elles n'ont pas besoin du layout dashboard)
   { path: 'hpt', component: HptDashboardComponent },
   { path: 'hospitals', component: HptHospitalListComponent },
   { path: 'hospitals/:id', component: HptHospitalDetailComponent },
   { path: 'tickets', component: HptTicketListComponent },
   { path: 'tickets/create', component: HptTicketCreateComponent },
-  { path: '**', redirectTo: '' },
-  {
-    path: 'auth',
-    component: AuthLayoutComponent,
-    children: [
-      { path: 'login', component: LoginComponent }
-    ]
-  },
-  { path: '**', redirectTo: '/dashboard' },
 
+  // Redirections pour compatibilité
+  { path: 'dashboard', redirectTo: '/admin/dashboard', pathMatch: 'full' },
+
+  // Route par défaut - DOIT être en dernier
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    enableTracing: false, // Mettre à true pour debug
+    useHash: false // Important pour le déploiement SPA
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
