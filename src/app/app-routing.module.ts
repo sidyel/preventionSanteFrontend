@@ -47,10 +47,10 @@ import { HptTicketCreateComponent } from "./features/hpt-tickets/hpt-ticket-crea
 import { AcceuilComponent } from "./acceuil/acceuil.component";
 
 const routes: Routes = [
-  // Page d'accueil
+  // Page d'accueil publique (sans sidebar)
   { path: '', component: AcceuilComponent },
 
-  // Routes d'authentification
+  // Routes d'authentification (sans sidebar)
   {
     path: 'auth',
     component: AuthLayoutComponent,
@@ -59,14 +59,17 @@ const routes: Routes = [
     ]
   },
 
-  // Routes HPT indépendantes (sans layout)
+  // Routes HPT indépendantes (sans sidebar)
   { path: 'hpt', component: HptDashboardComponent },
   { path: 'hospitals', component: HptHospitalListComponent },
   { path: 'hospitals/:id', component: HptHospitalDetailComponent },
   { path: 'tickets', component: HptTicketListComponent },
   { path: 'tickets/create', component: HptTicketCreateComponent },
 
-  // Route dashboard directe avec layout
+  // ==================== ROUTES AVEC SIDEBAR ====================
+  // Toutes ces routes utilisent DashboardLayoutComponent (avec sidebar)
+
+  // Dashboard
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
@@ -75,68 +78,94 @@ const routes: Routes = [
     ]
   },
 
-  // Routes admin avec layout dashboard
+  // Users avec sidebar
   {
-    path: 'admin',
+    path: 'users',
     component: DashboardLayoutComponent,
     children: [
-      // Users routes
-      { path: 'users', component: UserListComponent },
-      { path: 'users/new', component: UserFormComponent },
-      { path: 'users/:id', component: UserDetailComponent },
-      { path: 'users/:id/edit', component: UserFormComponent },
-
-      // Structures Santé routes
-      { path: 'structures-sante', component: StructureSanteListComponent },
-      { path: 'structures-sante/new', component: StructureSanteFormComponent },
-      { path: 'structures-sante/:id', component: StructureSanteDetailComponent },
-      { path: 'structures-sante/:id/edit', component: StructureSanteFormComponent },
-
-      // ONGs routes
-      { path: 'ongs', component: OngListComponent },
-      { path: 'ongs/new', component: OngFormComponent },
-      { path: 'ongs/:id', component: OngDetailComponent },
-      { path: 'ongs/:id/edit', component: OngFormComponent },
-
-      // Campagnes routes
-      { path: 'campagnes', component: CampagneListComponent },
-      { path: 'campagnes/new', component: CampagneFormComponent },
-      { path: 'campagnes/:id', component: CampagneDetailComponent },
-      { path: 'campagnes/:id/edit', component: CampagneFormComponent },
-
-      // Messages routes
-      { path: 'messages', component: MessageListComponent },
-      { path: 'messages/new', component: MessageFormComponent },
-      { path: 'messages/:id', component: MessageDetailComponent },
-      { path: 'messages/:id/edit', component: MessageFormComponent },
-
-      // Alertes routes
-      { path: 'alertes', component: AlerteListComponent },
-      { path: 'alertes/new', component: AlerteFormComponent },
-      { path: 'alertes/:id', component: AlerteDetailComponent },
-      { path: 'alertes/:id/edit', component: AlerteFormComponent },
-
-      // Notifications routes
-      { path: 'notifications', component: NotificationListComponent }
+      { path: '', component: UserListComponent },
+      { path: 'new', component: UserFormComponent },
+      { path: ':id', component: UserDetailComponent },
+      { path: ':id/edit', component: UserFormComponent }
     ]
   },
 
-  // Routes de compatibilité (redirections)
-  { path: 'users', redirectTo: '/admin/users', pathMatch: 'full' },
-  { path: 'ongs', redirectTo: '/admin/ongs', pathMatch: 'full' },
-  { path: 'structures-sante', redirectTo: '/admin/structures-sante', pathMatch: 'full' },
-  { path: 'campagnes', redirectTo: '/admin/campagnes', pathMatch: 'full' },
-  { path: 'messages', redirectTo: '/admin/messages', pathMatch: 'full' },
-  { path: 'alertes', redirectTo: '/admin/alertes', pathMatch: 'full' },
-  { path: 'notifications', redirectTo: '/admin/notifications', pathMatch: 'full' },
+  // Structures Santé avec sidebar
+  {
+    path: 'structures-sante',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', component: StructureSanteListComponent },
+      { path: 'new', component: StructureSanteFormComponent },
+      { path: ':id', component: StructureSanteDetailComponent },
+      { path: ':id/edit', component: StructureSanteFormComponent }
+    ]
+  },
 
-  // Route par défaut - DOIT être en dernier
+  // ONGs avec sidebar
+  {
+    path: 'ongs',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', component: OngListComponent },
+      { path: 'new', component: OngFormComponent },
+      { path: ':id', component: OngDetailComponent },
+      { path: ':id/edit', component: OngFormComponent }
+    ]
+  },
+
+  // Campagnes avec sidebar
+  {
+    path: 'campagnes',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', component: CampagneListComponent },
+      { path: 'new', component: CampagneFormComponent },
+      { path: ':id', component: CampagneDetailComponent },
+      { path: ':id/edit', component: CampagneFormComponent }
+    ]
+  },
+
+  // Messages avec sidebar
+  {
+    path: 'messages',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', component: MessageListComponent },
+      { path: 'new', component: MessageFormComponent },
+      { path: ':id', component: MessageDetailComponent },
+      { path: ':id/edit', component: MessageFormComponent }
+    ]
+  },
+
+  // Alertes avec sidebar
+  {
+    path: 'alertes',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', component: AlerteListComponent },
+      { path: 'new', component: AlerteFormComponent },
+      { path: ':id', component: AlerteDetailComponent },
+      { path: ':id/edit', component: AlerteFormComponent }
+    ]
+  },
+
+  // Notifications avec sidebar
+  {
+    path: 'notifications',
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', component: NotificationListComponent }
+    ]
+  },
+
+  // Route par défaut pour les URLs non reconnues
   { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    enableTracing: false,
+    enableTracing: false, // Mettez à true pour debugger si nécessaire
     useHash: false
   })],
   exports: [RouterModule]
