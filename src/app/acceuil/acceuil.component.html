@@ -15,11 +15,19 @@
           </div>
         </div>
         <nav class="hidden md:flex space-x-8">
-          <a *ngFor="let item of navItems"
-             [href]="item.href"
-             class="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-            {{item.label}}
-          </a>
+          <!-- CORRIGÉ : Utilisation de routerLink pour les vraies routes Angular -->
+          <ng-container *ngFor="let item of navItems">
+            <a *ngIf="item.isAnchor"
+               [href]="item.href"
+               class="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              {{item.label}}
+            </a>
+            <a *ngIf="!item.isAnchor"
+               [routerLink]="item.href"
+               class="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              {{item.label}}
+            </a>
+          </ng-container>
         </nav>
         <button (click)="onLogin()"
                 class="bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-300">

@@ -6,13 +6,13 @@ import { Component } from '@angular/core';
   styleUrl: './acceuil.component.css'
 })
 export class AcceuilComponent {
-  // Navigation items
+  // Navigation items - CORRIGÉ
   navItems = [
-    { label: 'Accueil', href: '#accueil' },
-    { label: 'Services', href: '#services' },
-    { label: 'Hôpitaux', href: 'hpt' },
-    { label: 'Dashboard', href: 'dashboard' },
-    { label: 'Contact', href: 'contact' }
+    { label: 'Accueil', href: '#accueil', isAnchor: true },
+    { label: 'Services', href: '#services', isAnchor: true },
+    { label: 'Hôpitaux', href: '/hpt', isAnchor: false },
+    { label: 'Dashboard', href: '/dashboard', isAnchor: false },
+    { label: 'Contact', href: '#contact', isAnchor: true }
   ];
 
   // Acteurs data
@@ -138,5 +138,4 @@ export class AcceuilComponent {
     // Implement ONG registration
     console.log('ONG registration clicked');
   }
-
 }

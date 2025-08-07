@@ -48,7 +48,7 @@ import { AcceuilComponent } from "./acceuil/acceuil.component";
 
 const routes: Routes = [
   // Page d'accueil
-  { path: '', component: DashboardComponent },
+  { path: '', component: AcceuilComponent },
 
   // Routes d'authentification
   {
@@ -59,20 +59,27 @@ const routes: Routes = [
     ]
   },
 
-  // Routes HPT indépendantes
+  // Routes HPT indépendantes (sans layout)
   { path: 'hpt', component: HptDashboardComponent },
   { path: 'hospitals', component: HptHospitalListComponent },
   { path: 'hospitals/:id', component: HptHospitalDetailComponent },
   { path: 'tickets', component: HptTicketListComponent },
   { path: 'tickets/create', component: HptTicketCreateComponent },
 
-  // Routes avec layout dashboard
+  // Route dashboard directe avec layout
   {
-    path: '',
+    path: 'dashboard',
     component: DashboardLayoutComponent,
     children: [
-      { path: 'dashboard', component: DashboardComponent },
+      { path: '', component: DashboardComponent }
+    ]
+  },
 
+  // Routes admin avec layout dashboard
+  {
+    path: 'admin',
+    component: DashboardLayoutComponent,
+    children: [
       // Users routes
       { path: 'users', component: UserListComponent },
       { path: 'users/new', component: UserFormComponent },
@@ -113,6 +120,15 @@ const routes: Routes = [
       { path: 'notifications', component: NotificationListComponent }
     ]
   },
+
+  // Routes de compatibilité (redirections)
+  { path: 'users', redirectTo: '/admin/users', pathMatch: 'full' },
+  { path: 'ongs', redirectTo: '/admin/ongs', pathMatch: 'full' },
+  { path: 'structures-sante', redirectTo: '/admin/structures-sante', pathMatch: 'full' },
+  { path: 'campagnes', redirectTo: '/admin/campagnes', pathMatch: 'full' },
+  { path: 'messages', redirectTo: '/admin/messages', pathMatch: 'full' },
+  { path: 'alertes', redirectTo: '/admin/alertes', pathMatch: 'full' },
+  { path: 'notifications', redirectTo: '/admin/notifications', pathMatch: 'full' },
 
   // Route par défaut - DOIT être en dernier
   { path: '**', redirectTo: '' }
