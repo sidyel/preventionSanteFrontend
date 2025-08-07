@@ -48,7 +48,7 @@ import { AcceuilComponent } from "./acceuil/acceuil.component";
 
 const routes: Routes = [
   // Page d'accueil
-  { path: '', component: AcceuilComponent },
+  { path: '', component: DashboardComponent },
 
   // Routes d'authentification
   {
