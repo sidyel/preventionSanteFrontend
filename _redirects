@@ -1,2 +1,0 @@
-# Dans le dossier racine de votre projet
-echo "/*    /index.html   200" > src/_redirects

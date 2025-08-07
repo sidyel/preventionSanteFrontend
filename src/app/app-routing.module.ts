@@ -47,7 +47,7 @@ import { HptTicketCreateComponent } from "./features/hpt-tickets/hpt-ticket-crea
 import { AcceuilComponent } from "./acceuil/acceuil.component";
 
 const routes: Routes = [
-  // Page d'accueil publique
+  // Page d'accueil
   { path: '', component: AcceuilComponent },
 
   // Routes d'authentification
@@ -59,12 +59,18 @@ const routes: Routes = [
     ]
   },
 
+  // Routes HPT indépendantes
+  { path: 'hpt', component: HptDashboardComponent },
+  { path: 'hospitals', component: HptHospitalListComponent },
+  { path: 'hospitals/:id', component: HptHospitalDetailComponent },
+  { path: 'tickets', component: HptTicketListComponent },
+  { path: 'tickets/create', component: HptTicketCreateComponent },
+
   // Routes avec layout dashboard
   {
-    path: 'admin',
+    path: '',
     component: DashboardLayoutComponent,
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
 
       // Users routes
@@ -108,24 +114,14 @@ const routes: Routes = [
     ]
   },
 
-  // Routes HPT indépendantes (si elles n'ont pas besoin du layout dashboard)
-  { path: 'hpt', component: HptDashboardComponent },
-  { path: 'hospitals', component: HptHospitalListComponent },
-  { path: 'hospitals/:id', component: HptHospitalDetailComponent },
-  { path: 'tickets', component: HptTicketListComponent },
-  { path: 'tickets/create', component: HptTicketCreateComponent },
-
-  // Redirections pour compatibilité
-  { path: 'dashboard', redirectTo: '/admin/dashboard', pathMatch: 'full' },
-
   // Route par défaut - DOIT être en dernier
   { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    enableTracing: false, // Mettre à true pour debug
-    useHash: false // Important pour le déploiement SPA
+    enableTracing: false,
+    useHash: false
   })],
   exports: [RouterModule]
 })
