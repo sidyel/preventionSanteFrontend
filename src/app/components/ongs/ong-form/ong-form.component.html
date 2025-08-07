@@ -1,5 +1,4 @@
-<div class="max-w-4xl mx-auto space-y-6">
-  <!-- Header -->
+<!--<div class="max-w-4xl mx-auto space-y-6">
   <div class="flex justify-between items-center">
     <div>
       <h1 class="text-2xl font-bold text-gray-900">
@@ -11,14 +10,11 @@
     </div>
   </div>
 
-  <!-- Loading -->
   <div *ngIf="loading" class="flex justify-center items-center py-12">
     <app-loading-spinner size="lg"></app-loading-spinner>
   </div>
 
-  <!-- Form -->
   <form [formGroup]="mainForm" *ngIf="!loading" (ngSubmit)="onSubmit()" class="space-y-6">
-    <!-- User Information -->
     <div formGroupName="user" class="card">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations du contact principal</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -114,7 +110,6 @@
       </div>
     </div>
 
-    <!-- ONG Information -->
     <div formGroupName="ong" class="card">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations de l'ONG</h2>
       <div class="space-y-6">
@@ -223,7 +218,6 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="flex justify-end space-x-4">
       <button type="button" (click)="onCancel()" class="btn btn-secondary">
         Annuler
@@ -236,3 +230,4 @@
     </div>
   </form>
 </div>
+-->
